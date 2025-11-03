@@ -1,3 +1,5 @@
+/* base reset */
+
 * {
  margin: 0;
  padding: 0;
@@ -9,3 +11,16 @@ html, body {
 h1, h2, h3, h4, h5, h6, p {
  margin-bottom: 16px
 }
+
+/* colors n fonts */
+
+:root {
+	/* Color Var */
+	--green: #2CA58D;
+	--purple: #A997DF;
+    --dark-blue: #1B065E;
+
+	/* Font Var */
+	
+}
+
