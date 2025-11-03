@@ -2,6 +2,7 @@
 	"name": "eventsea",
 	"private": true,
 	"version": "0.0.1",
+	"description": "An Event App Created by Ev Schmitt and Jeremy Black",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -19,5 +20,13 @@
 		"svelte-check": "^4.3.3",
 		"typescript": "^5.9.3",
 		"vite": "^7.1.10"
-	}
+	},
+	"repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvTheWebDev/EventSea.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EvTheWebDev/EventSea/issues"
+  },
+  "homepage": "https://github.com/EvTheWebDev/EventSea#readme"
 }
