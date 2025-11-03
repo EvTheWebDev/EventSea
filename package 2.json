@@ -1,0 +1,19 @@
+{
+  "name": "eventsea",
+  "version": "1.0.0",
+  "description": "An Event App Created by Ev Schmitt and Jeremy Black",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvTheWebDev/EventSea.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EvTheWebDev/EventSea/issues"
+  },
+  "homepage": "https://github.com/EvTheWebDev/EventSea#readme"
+}
