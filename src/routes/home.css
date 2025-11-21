@@ -1,0 +1,58 @@
+.homeHero {
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(
+      #a997df2d,
+      #a997df2d
+    ),url("homeHero.png");
+    background-position: center;
+	background-size: cover;
+}
+
+.homeText {
+    color: white;
+    text-align: center;
+}
+
+.homeText h2{
+    font-size: 32px;
+}
+
+.homeText h1 {
+    font-size: 96px;
+}
+
+.homeText p {
+    font-size: 24px;
+
+}
+
+.homeText input {
+    width: 600px;
+    height: 50px;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    padding-left: 15px;
+    margin-top: 40px;
+    border-radius: 15px;
+    color: #1b065eba;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
+.trendingEvents {
+    margin: 0 auto;
+}
+
+.trendingEventCards {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+}

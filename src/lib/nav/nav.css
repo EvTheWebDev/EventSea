@@ -1,19 +1,23 @@
 nav {
+    position: absolute;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     height: 60px;
     align-items: center;
     padding: 25px;
+    color: white;
 }
 
 nav .links {
-    width: 25%;
+    width: 30%;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 nav .links a {
     text-decoration: none;
     font-size: 20px;
-    color: #1B065E;
+    color: white;
 }
