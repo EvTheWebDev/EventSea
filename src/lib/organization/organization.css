@@ -1,0 +1,67 @@
+.orgCard {
+    background-color: white;
+    width: 400px;
+    border-radius: 25px;
+    padding: 15px;
+    color: #1b065e;
+    filter: drop-shadow(0px 0px 30px #0000001b);
+    text-align: left;
+    margin-bottom: 40px;
+}
+
+.flex {
+    display: flex;
+}
+
+.orgCard img {
+    width: 80px;
+    height: 80px;
+    border-radius: 200px;
+    margin-right: 10px;
+}
+
+.orgCard .orgInfo {
+    padding: 10px;
+}
+
+.orgCard h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.orgCard span {
+display: inline-block;
+font-size: 16px;
+color: #1b065e8e;
+}
+
+.orgCard p {
+    padding: 10px;
+}
+
+.orgCard .margin {
+    margin-right: 5px;
+}
+
+.orgButtons {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.orgButtons button {
+    height: 40px;
+    width: 45%;
+    font-size: 14px;
+    color: #1B065E;
+    border-radius: 15px;
+    background-color: white;
+    border: 3px solid #1B065E;
+}
+
+.orgButtons button a {
+    text-decoration: none;
+    color: #1B065E;
+}

@@ -61,5 +61,9 @@
         />{org}</a
       ></span
     >
+    <div class="eventButtons">
+      <button><a href="/savedEvents">Add to My Events</a></button>
+      <button><a href="/singleEvent">Learn More</a></button>
+    </div>
   </div>
 </div>

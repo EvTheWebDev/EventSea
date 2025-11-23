@@ -47,7 +47,26 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .trendingEvents {
-    margin: 0 auto;
+    text-align: center;
+}
+
+.trendingEvents h2 {
+    margin-top: 75px;
+    margin-bottom: 50px;
+}
+
+#more {
+    text-decoration: none;
+    color: #1b065e;
+    font-size: 26px;
+    padding: 15px 50px;
+    border: #1b065e 4px solid;
+    border-radius: 15px;
+}
+
+.more {
+    margin-top: 50px;
+    margin-bottom: 80px;
 }
 
 .trendingEventCards {
@@ -55,4 +74,64 @@ input[type="search"]::-webkit-search-cancel-button {
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+}
+
+.category {
+    text-align: center;
+    background-color: #a997df68;
+}
+
+.category .heading {
+    padding-top: 50px;
+}
+
+.categories {
+    margin: 0 auto;
+    display: flex;
+    width: 80%;
+    justify-content: space-evenly;
+    margin-top: 50px;
+}
+
+.categories a {
+    text-decoration: none;
+    color: #1b065e;
+    margin-bottom: 75px;
+}
+
+.categoryCard {
+    text-decoration: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.categoryCard h3 {
+    margin-top: 5px;
+    font-size: 26px;
+}
+
+.categoryCard span {
+    font-size: 20px;
+}
+
+.categoryCard .margin {
+    margin-right: 5px;
+}
+
+.organizations {
+    text-align: center;
+}
+
+.organizations .heading {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.orgCards {
+    margin: 0 auto;
+    width: 90%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
