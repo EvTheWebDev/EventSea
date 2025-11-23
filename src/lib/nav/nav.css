@@ -7,10 +7,11 @@ nav {
     align-items: center;
     padding: 25px;
     color: white;
+    font-family: 'Mont-Medium';
 }
 
 nav .links {
-    width: 30%;
+    width: 35%;
     display: flex;
     justify-content: space-between;
     align-items: center;

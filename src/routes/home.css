@@ -18,15 +18,17 @@
 
 .homeText h2{
     font-size: 32px;
+    font-family: 'Mont-Medium';
 }
 
 .homeText h1 {
     font-size: 96px;
+    font-family: 'Gill-Bold-Italic';
 }
 
 .homeText p {
     font-size: 24px;
-
+    font-family: 'Mont-Reg';
 }
 
 .homeText input {
@@ -39,6 +41,7 @@
     margin-top: 40px;
     border-radius: 15px;
     color: #1b065eba;
+    font-family: 'Mont-Reg';
 }
 
 input[type="search"]::-webkit-search-cancel-button {
@@ -62,6 +65,7 @@ input[type="search"]::-webkit-search-cancel-button {
     padding: 15px 50px;
     border: #1b065e 4px solid;
     border-radius: 15px;
+    font-family: 'Mont-Semi';
 }
 
 .more {
@@ -109,6 +113,7 @@ input[type="search"]::-webkit-search-cancel-button {
 .categoryCard h3 {
     margin-top: 5px;
     font-size: 26px;
+    font-family: 'Mont-Bold';
 }
 
 .categoryCard span {
