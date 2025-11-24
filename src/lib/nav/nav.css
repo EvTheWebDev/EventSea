@@ -10,6 +10,10 @@ nav {
     font-family: 'Mont-Medium';
 }
 
+nav li {
+    list-style: none;
+}
+
 nav .links {
     width: 35%;
     display: flex;
@@ -22,3 +26,69 @@ nav .links a {
     font-size: 20px;
     color: white;
 }
+
+nav .links a,
+nav .menuItem ul li a {
+    transition: transform 120ms ease, color 120ms ease;
+    font-weight: 500;
+}
+
+nav .links a:hover,
+nav .links a:focus,
+nav .menuItem:hover > a,
+nav .menuItem:focus-within > a,
+nav .menuItem ul li a:hover,
+nav .menuItem ul li a:focus {
+    font-weight: 600; /* semi-bold */
+    transform: translateY(-2px);
+}
+
+nav .menuItem {
+    position: relative;
+}
+
+nav .menuItem ul {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 0;
+    background: white;
+    padding: 6px 0;
+    margin: 0;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 160ms cubic-bezier(.2,.9,.2,1), transform 160ms cubic-bezier(.2,.9,.2,1);
+    pointer-events: none;
+    will-change: opacity, transform;
+}
+
+nav .menuItem ul li {
+    list-style: none;
+    padding: 6px 12px;
+}
+
+#menuEvents {
+   min-width: 140px;
+}
+
+#menuOrg {
+   min-width: 200px;
+}
+
+nav .menuItem ul li a {
+    color: #1B065E;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: "Mont-Semi";
+    display: block;
+}
+
+nav .menuItem:hover > ul,
+nav .menuItem:focus-within > ul {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+
