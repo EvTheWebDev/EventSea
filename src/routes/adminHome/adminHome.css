@@ -1,0 +1,8 @@
+.wholePage {
+    display: flex;
+    height: 100%;
+    .siteContent {
+        padding: 20px;
+        
+    }
+}
