@@ -1,11 +1,71 @@
+/* colors n fonts */
+
+@font-face {
+	font-family: 'Gill-Bold-Italic';
+	src: url('/Gill Sans/Gill Sans Bold Italic.otf');
+}
+
+@font-face {
+	font-family: 'Gill-Bold';
+	src: url('/Gill Sans/Gill Sans Bold.otf');
+}
+
+@font-face {
+	font-family: 'Mont-Bold';
+	src: url('/Montserrat/Montserrat-Bold.ttf');
+}
+
+@font-face {
+	font-family: 'Mont-Italic';
+	src: url('/Montserrat/Montserrat-Italic.ttf');
+}
+
+@font-face {
+	font-family: 'Mont-Light';
+	src: url('/Montserrat/Montserrat-Light.ttf');
+}
+
+@font-face {
+	font-family: 'Mont-Medium';
+	src: url('/Montserrat/Montserrat-Medium.ttf');
+}
+
+@font-face {
+	font-family: 'Mont-Reg';
+	src: url('/Montserrat/Montserrat-Regular.ttf');
+}
+
+@font-face {
+	font-family: 'Mont-Semi';
+	src: url('/Montserrat/Montserrat-SemiBold.ttf');
+}
+
+:root {
+	/* Color Var */
+	--green: #2CA58D;
+	--purple: #A997DF;
+    --dark-blue: #1B065E;	
+}
+
+/* base reset */
+
 * {
  margin: 0;
  padding: 0;
  box-sizing: border-box;
+ font-family: 'Mont-Reg';
 }
 html, body {
  height: 100%
 }
 h1, h2, h3, h4, h5, h6, p {
  margin-bottom: 16px
+}
+
+
+
+.heading {
+	color: var(--dark-blue);
+	font-size: 38px;
+	font-family: 'Gill-Bold';
 }
