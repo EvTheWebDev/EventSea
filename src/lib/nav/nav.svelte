@@ -34,7 +34,7 @@
         /></a
       >
       <ul id="menuOrg">
-        <li><a href="/">My Organization</a></li>
+        <li><a href="/">My Organizations</a></li>
         <li><a href="/">My Announcements</a></li>
         <li><a href="/">All Organizations</a></li>
       </ul>
