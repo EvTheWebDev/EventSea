@@ -1,5 +1,4 @@
 <h1>EventSea</h1>
 <p>
-  Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the
-  documentation
+  visit <a href="/adminLogin">Admin Login</a> to see Ev's Work
 </p>
