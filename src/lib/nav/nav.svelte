@@ -25,7 +25,7 @@
       </ul>
     </li>
     <li class="menuItem">
-      <a href="/orgs"
+      <a href="/organizations"
         >Organizations<Icon
           icon="icon-park-outline:down"
           width="18"
@@ -40,14 +40,7 @@
       </ul>
     </li>
     <li class="menuItem">
-      <a href="/profile"
-        >Profile<Icon
-          icon="mynaui:user-solid"
-          width="18"
-          height="18"
-          style="color: #fff;margin-left:10px;background-color:#bebebe;border-radius:50%;"
-        /></a
-      >
+      <a href="/profile">Log In</a>
     </li>
   </div>
 </nav>
