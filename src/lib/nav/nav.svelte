@@ -1,8 +1,8 @@
 <script>
   import "./nav.css";
   import Icon from "@iconify/svelte";
-  import { authStore } from "../../stores/auth.js";
-  import { signUp, logIn } from "../firebase.js";
+  import { authStore } from "../../store/auth.js";
+  import { signUp, logIn, getProfilePicture } from "../firebase.js";
 
   let showAuthModal = false;
   let authMode = "login"; // 'login' | 'signup'
@@ -16,6 +16,8 @@
   let firstName = "";
   let lastName = "";
   let error = "";
+  /** @type {string | null} */
+  let navAvatar = null;
 
   // Open auth modal and choose mode
   function openAuth(mode = "login") {
@@ -81,6 +83,26 @@
     firstName = "";
     lastName = "";
   }
+
+  // Load small avatar for nav when user signs in
+  $: if ($authStore?.user?.uid) {
+    (async () => {
+      try {
+        const user = $authStore.user;
+        if (!user?.uid) {
+          navAvatar = null;
+          return;
+        }
+        const uid = /** @type {string} */ (user.uid);
+        const url = await getProfilePicture(uid);
+        navAvatar = url;
+      } catch (e) {
+        navAvatar = null;
+      }
+    })();
+  } else {
+    navAvatar = null;
+  }
 </script>
 
 <nav>
@@ -128,7 +150,12 @@
     </li>
     <li class="menuItem">
       {#if $authStore.user}
-        <a href="/profile">My Profile</a>
+        <a href="/profile" class="profile-link">
+          My Profile
+          {#if navAvatar}
+            <img src={navAvatar} alt="avatar" class="nav-avatar" />
+          {/if}
+        </a>
       {:else}
         <button
           type="button"
