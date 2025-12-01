@@ -1,0 +1,104 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { updateProfile } from "firebase/auth";
+import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA04n74SGTp7dKqXFl6Udy3ryfDx1uX2b8",
+  authDomain: "eventsea-12963.firebaseapp.com",
+  projectId: "eventsea-12963",
+  storageBucket: "eventsea-12963.firebasestorage.app",
+  messagingSenderId: "869381378518",
+  appId: "1:869381378518:web:e4b99830faaa5922b8d477",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+export { auth, app };
+
+/**
+ * Sign up a new user using email/password.
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<import("firebase/auth").UserCredential>}
+ */
+/**
+ * Sign up a new user using email/password and save profile data.
+ * @param {string} email
+ * @param {string} password
+ * @param {string} [firstName]
+ * @param {string} [lastName]
+ * @returns {Promise<import("firebase/auth").UserCredential>}
+ */
+export async function signUp(email, password, firstName = "", lastName = "") {
+  // create the user
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+
+  // update the Firebase user profile displayName
+  try {
+    await updateProfile(userCredential.user, {
+      displayName: `${firstName} ${lastName}`.trim(),
+    });
+  } catch (err) {
+    // non-fatal: profile update failed, but user account exists
+    console.warn("Failed to update user profile:", err);
+  }
+
+  // persist user profile in Firestore for later use
+  try {
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      firstName: firstName || null,
+      lastName: lastName || null,
+      email: userCredential.user.email || null,
+      createdAt: serverTimestamp(),
+    });
+  } catch (err) {
+    console.warn("Failed to write user document:", err);
+  }
+
+  return userCredential;
+}
+
+/**
+ * Log in user with email/password.
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<import("firebase/auth").UserCredential>}
+ */
+export async function logIn(email, password) {
+  const userCredential = await signInWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
+  return userCredential;
+}
+
+export async function logOut() {
+  await signOut(auth);
+}
+
+/**
+ * Subscribe to auth state changes.
+ * @param {(user: import("firebase/auth").User|null) => void} cb
+ * @returns {() => void} unsubscribe function
+ */
+export function onAuthStateListener(cb) {
+  return onAuthStateChanged(auth, cb);
+}

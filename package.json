@@ -30,6 +30,7 @@
 	},
 	"homepage": "https://github.com/EvTheWebDev/EventSea#readme",
 	"dependencies": {
-		"@iconify/svelte": "^5.1.0"
+		"@iconify/svelte": "^5.1.0",
+		"firebase": "^12.6.0"
 	}
 }
