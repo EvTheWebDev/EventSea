@@ -3,8 +3,6 @@
     import {AdminNav} from "$lib"
   import AdminFooter from '$lib/adminFooter/adminFooter.svelte';
 </script>
-<div class="wholePage">
-    <AdminNav />
     <div class="siteContent">
         <h1>Login</h1>
 
@@ -18,7 +16,5 @@
     <button type="submit">Login</button>
         </form>
     </div>
-</div>
 
-<AdminFooter />
 

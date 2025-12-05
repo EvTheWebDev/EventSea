@@ -1,10 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import { messageStore } from "../store/message.js";
-
+  import { page } from "$app/stores";
   let { children } = $props();
   import "../global.css";
-  import { Nav, Footer } from "$lib";
+  import { Nav, Footer, AdminFooter, AdminNav } from "$lib";
+
+  // Admin / User Footer Toggle Logic
+  let isAdminRoute = $derived($page.url.pathname.startsWith("/admin"));
 
   onMount(() => {
     // Check for pending message from sessionStorage (e.g., after redirect)
@@ -31,8 +34,50 @@
 	<link rel="icon" href={favicon} />
 </svelte:head> -->
 
-<Nav />
+<div class="app-shell" class:admin-layout={isAdminRoute}>
+  
+  {#if !isAdminRoute}
+    <Nav />
+  {:else}
+    <AdminNav />
+  {/if}
 
-{@render children()}
+  <div class="siteContent">
+    <main>
+      {@render children()}
+    </main>
 
-<Footer />
+    {#if !isAdminRoute}
+      <Footer />
+    {:else}
+      <AdminFooter />
+    {/if}
+  </div>
+
+</div>
+
+
+<style>
+  .app-shell {
+    display: flex;
+    flex-direction: column; 
+    min-height: 100vh; /* CRITICAL: Forces the layout to fill the screen */
+  }
+
+  .siteContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* This makes the content area expand to fill remaining space */
+    width: 100%; /* Ensures it takes full width in admin mode */
+  }
+
+  main {
+    flex: 1; /* Pushes the footer to the bottom of the content area */
+  }
+
+  /* --- Admin Styles (Sidebar View) --- */
+  .app-shell.admin-layout {
+    flex-direction: row; /* Sidebar left, Content right */
+    margin-bottom: 0;    /* Remove that negative margin you had */
+  }
+</style>
