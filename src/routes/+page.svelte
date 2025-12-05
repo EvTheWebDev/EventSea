@@ -132,6 +132,8 @@
       <Org />
       <Org />
     </div>
-    <div class="more"><a id="more" href="/orgs">More Organizations</a></div>
+    <div class="more">
+      <a id="more" href="/organizations">More Organizations</a>
+    </div>
   </div>
 </main>
