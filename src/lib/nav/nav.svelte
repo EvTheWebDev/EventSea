@@ -2,6 +2,7 @@
   import "./nav.css";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
+  import { messageStore, showMessage } from "../../store/message.js";
   import { signUp, logIn, getProfilePicture } from "../firebase.js";
 
   let showAuthModal = false;
@@ -31,10 +32,12 @@
     try {
       if (authMode === "login") {
         await logIn(email, password);
+        showMessage("You have successfully logged in!");
       } else {
         await signUp(email, password, firstName, lastName);
+        showMessage("You have successfully signed up!");
       }
-      // firebase auth listener will update the store; close modal
+      // firebase auth listener will update the store; close auth modal
       showAuthModal = false;
       email = "";
       firstName = "";
@@ -224,6 +227,24 @@
           >{authMode === "login" ? "Log In" : "Sign Up"}</button
         >
       </form>
+    </div>
+  </div>
+{/if}
+
+{#if $messageStore}
+  <div class="success-modal-overlay" aria-hidden={!$messageStore}>
+    <div
+      class="success-modal"
+      role="alertdialog"
+      aria-modal="true"
+      aria-label="Success message"
+    >
+      <button
+        class="success-close"
+        on:click={() => messageStore.set(null)}
+        aria-label="Close">×</button
+      >
+      <div class="success-content">{$messageStore.message}</div>
     </div>
   </div>
 {/if}

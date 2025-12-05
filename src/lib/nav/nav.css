@@ -219,4 +219,59 @@ nav button {
   .warning-modal-overlay { padding-bottom: 14px; }
 }
 
+/* Success modal (same style as warning modal) */
+.success-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 18px;
+  background: transparent;
+  z-index: 2100;
+  pointer-events: none;
+}
+
+.success-modal {
+  background: #006b3f;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-family: "Mont-Semi";
+  min-width: 300px;
+  max-width: 720px;
+  width: clamp(280px, 86%, 520px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+  position: relative;
+  text-align: left;
+  font-size: 15px;
+  pointer-events: auto;
+}
+
+.success-modal .success-close {
+  position: absolute;
+  right: 10px;
+  bottom: 1px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: "Mont-Light";
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.success-modal .success-content {
+  padding: 6px 10px;
+}
+
+@media (max-width: 420px) {
+  .success-modal {
+    width: calc(100% - 28px);
+    border-radius: 8px;
+  }
+  .success-modal-overlay {
+    padding-bottom: 14px;
+  }
+}
+
 

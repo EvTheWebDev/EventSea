@@ -1,10 +1,24 @@
+#profHead {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 75px;
+}
+
+.profileContainer {
+  margin: 0 auto;
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+}
+
 .profile-container {
   padding: 24px;
-  max-width: 430px;
-  height: 570px;
+  max-width: 450px;
+  min-height: 570px;
   border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 
 .profile-picture-section {
@@ -19,6 +33,7 @@
   height: 360px;
   border-radius: 50%;
   object-fit: cover;
+  margin-top: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -70,11 +85,11 @@
   flex-direction: column;
   gap: 12px;
   padding-top: 8px;
+  color:#1B065E
 }
 
 .profile-info p {
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 18px;
 }
 
 @media (max-width: 600px) {
@@ -97,4 +112,81 @@
 
 .profile {
     background-color: red;
+}
+
+.sign-out-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 16px 0;
+}
+
+.sign-out-button {
+  padding: 10px 24px;
+  background-color: #a40000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.sign-out-button:hover {
+  background-color: #7c0000;
+}
+
+.sign-out-button:active {
+  transform: scale(0.98);
+}
+
+.profile-info .profileName {
+  font-size: 38px;
+  font-family: "Mont-Bold";
+}
+
+.profile-actions {
+  text-align: right;
+}
+
+.profile-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+    color: #1B065E;
+  font-size: 24px;
+  font-family: "Mont-Semi";
+  margin-left: 10px;
+}
+
+.profileOrgs {
+  width: 765px;
+  height: 250px;
+ border-radius: 25px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 22px;
+  color: #1B065E;
+  text-align: center;
+}
+
+.profileOrgs h2 {
+  font-family: "Mont-Bold";
+  color: #1B065E;
+  padding-top: 25px;
+  margin-bottom: 20px;
+}
+
+.profileOrgs p {
+  margin-bottom: 50px;
+}
+
+.profileOrgs a {
+  color: #1B065E;
+  text-decoration: none;
+  font-family: "Mont-Semi";
+  border: #1B065E 4px solid;
+  padding: 15px 30px;
+  border-radius: 15px;
 }

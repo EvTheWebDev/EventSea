@@ -2,12 +2,14 @@
   import "../../global.css";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
+  import { showMessage } from "../../store/message.js";
   import {
     uploadProfilePicture,
     getProfilePicture,
     changeUserEmail,
     getUserProfile,
     changeUserProfile,
+    logOut,
   } from "../../lib/firebase.js";
   import "./profile.css";
 
@@ -169,84 +171,126 @@
     saveError = "";
     editMode = false;
   }
+
+  async function handleSignOut() {
+    try {
+      await logOut();
+      // Store message to display after redirect
+      if (
+        typeof window !== "undefined" &&
+        typeof sessionStorage !== "undefined"
+      ) {
+        sessionStorage.setItem(
+          "pendingMessage",
+          JSON.stringify({
+            message: "You have successfully signed out!",
+            type: "success",
+          })
+        );
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.error("Sign out failed:", err);
+    }
+  }
 </script>
 
 <main>
   <div class="nav"></div>
-  <h1 class="heading">Hey there, {firstName}!</h1>
-
-  <div class="profile-container">
-    <div class="profile-picture-section">
-      {#if profilePictureUrl}
-        <img src={profilePictureUrl} alt="Profile" class="profile-picture" />
-      {:else}
-        <div class="profile-picture-placeholder">No Picture</div>
-      {/if}
-
-      {#if editMode}
-        <label class="upload-label">
-          <input
-            type="file"
-            accept="image/*"
-            on:change={handlePictureUpload}
-            disabled={uploading}
-            style="display: none;"
-          />
-          <span class="upload-button"
-            >{uploading ? "Uploading..." : "Change Picture"}</span
-          >
-        </label>
-      {/if}
-
-      {#if uploadError}
-        <p class="error-text">{uploadError}</p>
-      {/if}
-    </div>
-
-    <div class="profile-info">
-      <p>
-        <strong>Name:</strong>
-        {#if editMode}
-          <input
-            type="text"
-            class="name-input"
-            bind:value={editedFirst}
-            placeholder="First name"
-          />
-          <input
-            type="text"
-            class="name-input"
-            bind:value={editedLast}
-            placeholder="Last name"
-          />
+  <h1 id="profHead" class="heading">Hey there, {firstName}!</h1>
+  <div class="profileContainer">
+    <div class="profile-container">
+      <div class="profile-picture-section">
+        {#if profilePictureUrl}
+          <img src={profilePictureUrl} alt="Profile" class="profile-picture" />
         {:else}
-          {firstName}{#if lastName}
-            {lastName}{/if}
+          <div class="profile-picture-placeholder">No Picture</div>
         {/if}
-      </p>
 
-      <p>
-        <strong>Email:</strong>
         {#if editMode}
-          <input type="email" bind:value={editedEmail} />
-        {:else}
-          {email}
+          <label class="upload-label">
+            <input
+              type="file"
+              accept="image/*"
+              on:change={handlePictureUpload}
+              disabled={uploading}
+              style="display: none;"
+            />
+            <span class="upload-button"
+              >{uploading ? "Uploading..." : "Change Picture"}</span
+            >
+          </label>
         {/if}
-      </p>
 
-      <div class="profile-actions">
-        {#if editMode}
-          <button on:click={saveProfile} class="save-button">Save</button>
-          <button on:click={cancelEdit} class="cancel-button">Cancel</button>
-          {#if saveError}
-            <div class="error-text">{saveError}</div>
-          {/if}
-        {:else}
-          <button on:click={() => (editMode = true)} class="edit-button"
-            >Edit Profile</button
-          >
+        {#if uploadError}
+          <p class="error-text">{uploadError}</p>
         {/if}
       </div>
+
+      <div class="profile-info">
+        <p class="profileName">
+          {#if editMode}
+            <input
+              type="text"
+              class="name-input"
+              bind:value={editedFirst}
+              placeholder="First name"
+            />
+            <input
+              type="text"
+              class="name-input"
+              bind:value={editedLast}
+              placeholder="Last name"
+            />
+          {:else}
+            {firstName}
+            {#if lastName}
+              {lastName}{/if}
+          {/if}
+        </p>
+
+        <p class="profileEmail">
+          <Icon
+            icon="mdi:email-outline"
+            width="15"
+            height="15"
+            style="color: #0f0446"
+          />
+          {#if editMode}
+            <input type="email" bind:value={editedEmail} />
+          {:else}
+            {email}
+          {/if}
+        </p>
+
+        <div class="profile-actions">
+          {#if editMode}
+            <button on:click={saveProfile} class="save-button">Save</button>
+            <button on:click={cancelEdit} class="cancel-button">Cancel</button>
+            {#if saveError}
+              <div class="error-text">{saveError}</div>
+            {/if}
+          {:else}
+            <button on:click={() => (editMode = true)} class="edit-button"
+              ><Icon
+                icon="mingcute:pencil-fill"
+                width="32"
+                height="32"
+                style="color: #0f0446"
+              /></button
+            >
+          {/if}
+        </div>
+      </div>
     </div>
+    <div class="profileOrgs">
+      <h2>Organization Affiliations</h2>
+      <p>You are not part of any organizations yet.</p>
+      <a href="../userOrganizations">My Organizations</a>
+    </div>
+  </div>
+
+  <div class="sign-out-section">
+    <button on:click={handleSignOut} class="sign-out-button">Sign Out</button>
   </div>
 </main>
