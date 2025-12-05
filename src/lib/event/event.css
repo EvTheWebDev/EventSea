@@ -8,6 +8,19 @@
     font-family: "Mont-Reg";
 }
 
+.eventImage {
+    width: 100%;
+    height: 200px;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    object-fit: cover;
+    position: relative;
+    display: block;
+    z-index: 0;
+
+    
+}
+
 .eventText {
     padding: 25px;
     font-size: 20px;

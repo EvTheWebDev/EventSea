@@ -1,7 +1,7 @@
 <script>
   import "./event.css";
   import Icon from "@iconify/svelte";
-  export let img = "/game.png";
+  export let img = "/placeholder.jpg";
   export let alt = "Alt text for the collection image.";
   export let name = "Default Event Name";
   export let description = "Default description goes here.";
