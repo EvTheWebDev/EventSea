@@ -1,0 +1,15 @@
+.wholePage {
+    display: flex;
+    height: 100%;
+    .siteContent {
+        padding: 20px;
+        .adminForm {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            
+        }
+    }
+    margin-bottom: -150px;
+
+}

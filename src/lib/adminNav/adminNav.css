@@ -46,5 +46,17 @@
             
         }
     }
+
+    .logoutButton {
+        padding: 10px 20px;
+        border-radius: 25px;
+        position: relative;
+        
+        &:hover {
+            background-color: #A997DF;
+            cursor: pointer;
+        }
+
+    }
     
 }

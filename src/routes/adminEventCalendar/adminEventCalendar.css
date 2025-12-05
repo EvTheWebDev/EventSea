@@ -1,6 +1,6 @@
 .wholePage {
     display: flex;
-    height: 90vh;
+    height: 100%;
     .siteContent {
         padding: 20px;
         

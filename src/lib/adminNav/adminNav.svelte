@@ -21,4 +21,7 @@
             <li><a href="/memberList">Member List</a></li>
         </ul>
     </section>
+    <section class="LogOut">
+        <button class="logoutButton" id="">Log Out</button>
+    </section>
 </div>

@@ -1,6 +1,7 @@
 <script>
     import './adminHome.css';
-    import {AdminNav} from "$lib"
+    import {AdminNav} from "$lib";
+    import AdminFooter from "$lib/adminFooter/adminFooter.svelte";
 </script>
 
 <div class="wholePage">
@@ -8,6 +9,7 @@
     <div class="siteContent">
         <h2>Admin Homepage</h2>
     </div>
-</div>
     
+</div>
+    <AdminFooter />
 
