@@ -4,7 +4,7 @@
 
 <footer class="adminFooter">
   <div>
-    <a href="/adminLogin">Switch to User View</a>
+    <a href="/">Switch to User View</a>
     <p>Copyright 2025 All Rights Reserved</p>
   </div>
 </footer>
