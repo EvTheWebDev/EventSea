@@ -4,10 +4,6 @@ import { AdminNav } from "$lib"
   import AdminFooter from '$lib/adminFooter/adminFooter.svelte';
 </script>
 
-<div class="wholePage">
-    <AdminNav />
-    <div class="siteContent">
-        <h2>Our Members</h2>
-    </div>
+<div class="pageContent">
+    <h1>[ORG NAME] Members</h1>
 </div>
-<AdminFooter />

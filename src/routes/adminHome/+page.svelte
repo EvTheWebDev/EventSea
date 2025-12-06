@@ -2,10 +2,6 @@
     import './adminHome.css';
 </script>
 
-<div class="wholePage">
-    <div class="siteContent">
-        <h2>Admin Homepage</h2>
-    </div>
-    
+<div class="pageContent">
+    <h1>Welcome, [ORG NAME]</h1>
 </div>
-

@@ -1,5 +1,6 @@
 <script>
     import './adminNav.css';
+    import 'iconify-icon';
     
 </script>
 
@@ -14,14 +15,30 @@
     </section>
     <section class="buttons">
         <ul>
-            <li><a href="/adminHome">Home</a></li>
-            <li><a href="/adminEventCalendar">Event Calendar</a></li>
-            <li><a href="newEvent">New Event</a></li>
-            <li><a href="/newAnnouncement">New Announcement</a></li>
-            <li><a href="/memberList">Member List</a></li>
+            <li>
+                <iconify-icon icon="fa7-solid:house-chimney" width="30px" height="30px"></iconify-icon>
+                <a href="/adminHome">Home</a>
+            </li>
+            <li>
+                <iconify-icon icon="mdi:calendar" width="30px" height="30px"></iconify-icon>
+                <a href="/adminEventCalendar">Event Calendar</a>
+            </li>
+            <li>
+                <iconify-icon icon="mdi:event-add" width="30" height="30"></iconify-icon>
+                <a href="/adminNewEvent">New Event</a>
+            </li>
+            <li>
+                <iconify-icon icon="streamline:announcement-megaphone-remix" width="30" height="30"></iconify-icon>
+                <a href="/adminNewAnnouncement">New Announcement</a>
+            </li>
+            <li>
+                <iconify-icon icon="majesticons:users-line" width="30" height="30"></iconify-icon>
+                <a href="/adminMemberList">Member List</a>
+            </li>
+            <li class="logoutButton" id="adminLogout">
+                <iconify-icon icon="ic:round-exit-to-app" width="30" height="30"></iconify-icon>
+                <span>Log Out</span>
+            </li>
         </ul>
-    </section>
-    <section class="LogOut">
-        <button class="logoutButton" id="">Log Out</button>
     </section>
 </div>

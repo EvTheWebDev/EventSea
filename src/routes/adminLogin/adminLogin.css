@@ -1,15 +1,52 @@
-.wholePage {
-    display: flex;
+.adminLoginPage {
     height: 100%;
-    .siteContent {
-        padding: 20px;
-        .adminForm {
+    padding: 20px;
+    background-image: linear-gradient(
+      #cdbff177,
+      #694fb967
+    ),url("adminBG.jpg");
+    background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+
+        .loginFormHolder {
             display: flex;
             align-items: center;
-            justify-content: space-evenly;
-            
+            flex-direction: column;
+            h1 {
+                margin-bottom: 30px;
+                font-size: 50px;
+                font-family: 'Mont-Bold';            
+            }
+        }
+    .adminForm {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        flex-direction: column;
+        label {
+            margin-bottom: 5px;
+            font-family: 'Mont-Bold';
+            font-size: 18px;
+        }
+        input {
+            margin-bottom: 20px;
+            padding: 5px ;
+            border-radius: 25px;
+            font-size: 20px;
+            padding-left: 10px;
+        }
+        button {
+            width: 100px;
+            height: 35px;
+            border-radius: 25px;
+            background-color: #2CA58D;
+            color: white;
+            font-family: 'Mont-Bold';
+            font-size: 16px;
+            cursor: pointer;
         }
     }
-    margin-bottom: -150px;
-
 }

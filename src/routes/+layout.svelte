@@ -8,6 +8,8 @@
 
   // Admin / User Footer Toggle Logic
   let isAdminRoute = $derived($page.url.pathname.startsWith("/admin"));
+  let isAdminLogin = $derived($page.url.pathname.startsWith("/adminLogin"));
+
 
   onMount(() => {
     // Check for pending message from sessionStorage (e.g., after redirect)
@@ -38,6 +40,8 @@
   
   {#if !isAdminRoute}
     <Nav />
+  {:else if isAdminLogin}
+    <!-- No Nav for Admin Login -->
   {:else}
     <AdminNav />
   {/if}
@@ -67,7 +71,6 @@
   .siteContent {
     display: flex;
     flex-direction: column;
-    flex: 1; /* This makes the content area expand to fill remaining space */
     width: 100%; /* Ensures it takes full width in admin mode */
   }
 

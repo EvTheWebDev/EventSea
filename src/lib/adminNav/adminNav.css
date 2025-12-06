@@ -40,24 +40,23 @@
         li {
             padding: 15px;
             margin-bottom: 10px;
-            a {
+            color: white;
+            display: flex;
+            align-items: center;
+            
+            iconify-icon {
+                margin-right: 10px;
+                width: 50px;
+            }
+            a, span {
                text-decoration: none;
                color: white;
+            }
+            span:hover, a:hover {
+                cursor: pointer;
+                text-decoration: underline;
             }
             
         }
     }
-
-    .logoutButton {
-        padding: 10px 20px;
-        border-radius: 25px;
-        position: relative;
-        
-        &:hover {
-            background-color: #A997DF;
-            cursor: pointer;
-        }
-
-    }
-    
 }
