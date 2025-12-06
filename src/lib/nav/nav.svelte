@@ -125,7 +125,7 @@
         <li class="subItem">
           <a href="/userEvents" on:click={protectClick}>My Events</a>
         </li>
-        <li class="subItem"><a href="/">All Events</a></li>
+        <li class="subItem"><a href="/events">All Events</a></li>
       </ul>
     </li>
     <li class="menuItem">
@@ -148,7 +148,7 @@
             >My Announcements</a
           >
         </li>
-        <li><a href="/">All Organizations</a></li>
+        <li><a href="/organizations">All Organizations</a></li>
       </ul>
     </li>
     <li class="menuItem">
