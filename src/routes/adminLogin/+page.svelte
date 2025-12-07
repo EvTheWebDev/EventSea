@@ -15,6 +15,7 @@
   // --- STATE ---
   let loading = true;
   let view = "auth"; 
+  let creating = false; // To disable button while processing
   
   // Login Form Data
   let loginEmail = "";
@@ -24,7 +25,6 @@
   let newOrgName = "";
   let newOrgEmail = ""; 
   let newOrgPassword = "";
-  let newOrgConfirmPassword = "";
 
   // Org Selection Data
   let myOrgs = [];
@@ -32,12 +32,14 @@
   // --- LIFECYCLE ---
   onMount(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      // If we are currently running a creation process, don't interrupt with the listener
+      if (creating) return;
+
       if (user) {
         const orgIds = await checkUserAdminStatus(user.uid);
 
         if (orgIds && orgIds.length > 0) {
           if (orgIds.length === 1) {
-            // UPDATED ROUTE: Go to adminHome with query param
             goto(`/adminHome?orgId=${orgIds[0]}`);
           } else {
             myOrgs = await getOrgsByIds(orgIds);
@@ -45,6 +47,7 @@
             loading = false;
           }
         } else {
+            // User exists but has no orgs yet
             loading = false; 
         }
       } else {
@@ -66,27 +69,55 @@
     }
   }
 
-  async function handleCreate() {
-    if (newOrgPassword !== newOrgConfirmPassword) {
-      return alert("Passwords do not match!");
-    }
+  // Helper to run the DB operations after we have a valid User ID
+  async function finalizeOrgCreation(uid) {
+    // Create the Org and link it to the user
+    const newOrgId = await createOrganization(uid, newOrgName, newOrgEmail);
     
+    // Redirect immediately
+    goto(`/adminHome?orgId=${newOrgId}`);
+  }
+
+  async function handleCreate() {
+  
+    
+    creating = true; // Stop the onAuthStateChanged listener from interfering
+
     try {
-      await signUp(newOrgEmail, newOrgPassword, "Admin", "");
-
-      const uid = auth.currentUser.uid;
-      const newOrgId = await createOrganization(uid, newOrgName, newOrgEmail);
-
-      // UPDATED ROUTE: Go to adminHome with query param
-      goto(`/adminHome?orgId=${newOrgId}`);
+      // SCENARIO B: Try to create a NEW account
+      const userCredential = await signUp(newOrgEmail, newOrgPassword, "Admin", "User");
+      
+      // If successful, proceed
+      await finalizeOrgCreation(userCredential.user.uid);
 
     } catch (err) {
-      alert("Creation Failed: " + err.message);
+      
+      // SCENARIO C: User already exists?
+      if (err.code === 'auth/email-already-in-use') {
+        console.log("User exists, attempting to log in and append Org...");
+        
+        try {
+          // Try to log them in with the password they provided
+          const userCredential = await logIn(newOrgEmail, newOrgPassword);
+          
+          // If password matched, proceed to create org for this EXISTING user
+          await finalizeOrgCreation(userCredential.user.uid);
+
+        } catch (loginErr) {
+          // User exists, but password was wrong
+          alert("An account with this email exists, but the password was incorrect.");
+          creating = false;
+        }
+
+      } else {
+        // Genuine creation error (e.g. weak password)
+        alert("Creation Failed: " + err.message);
+        creating = false;
+      }
     }
   }
 
   function handleSelectOrg(orgId) {
-    // UPDATED ROUTE: Go to adminHome with query param
     goto(`/adminHome?orgId=${orgId}`);
   }
 </script>
@@ -142,7 +173,7 @@
         <h3 class="middleOr">OR</h3>
         
         <div class="createOrgForm">
-            <h2>Create an Account</h2>
+            <h2>Create Organization</h2>
             <form class="adminForm" id="adminSignUp" on:submit|preventDefault={handleCreate}>
             
             <label for="orgName">Organization Name</label>
@@ -153,11 +184,10 @@
 
             <label for="newPassword">Password</label>
             <input type="password" name="newPassword" id="newPassword" bind:value={newOrgPassword} required/>
-            
-            <label for="newPasswordConfirm">Confirm Password</label>
-            <input type="password" name="newPasswordConfirm" id="newPasswordConfirm" bind:value={newOrgConfirmPassword} required/>
 
-            <button type="submit">Create Organization</button>
+            <button type="submit" disabled={creating}>
+                {creating ? "Processing..." : "Create Organization"}
+            </button>
             </form>
         </div>
         

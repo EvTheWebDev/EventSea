@@ -1,6 +1,6 @@
  .split-page-container {
     display: flex;
-    min-height: 100vh; /* Fill remaining height */
+    flex: 1; /* Grow to fill the flex-parent (main) */
     background-color: #f4f4f9;
   }
 
@@ -54,6 +54,8 @@
     background: #fafafa;
     transition: border 0.2s;
   }
+
+  text
   
   input:focus, textarea:focus {
     border-color: #1B065E;
@@ -106,7 +108,7 @@
 
   .preview-sticky h2 {
     color: #1B065E;
-    margin-bottom: 5px;
+    margin-bottom: 50px;
   }
   .preview-sub {
     color: #666;

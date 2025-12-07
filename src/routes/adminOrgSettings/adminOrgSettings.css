@@ -160,9 +160,9 @@
   margin-left: 10px;
 }
 
-.profileOrgs {
-  width: 765px;
-  height: 250px;
+.manageAdmins {
+  padding: 24px;
+  min-width: 45%;
  border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -171,18 +171,18 @@
   text-align: center;
 }
 
-.profileOrgs h2 {
+.manageAdmins h2 {
   font-family: "Mont-Bold";
   color: #1B065E;
   padding-top: 25px;
   margin-bottom: 20px;
 }
 
-.profileOrgs p {
+.manageAdmins p {
   margin-bottom: 50px;
 }
 
-.profileOrgs a {
+.manageAdmins a {
   color: #1B065E;
   text-decoration: none;
   font-family: "Mont-Semi";
@@ -190,3 +190,52 @@
   padding: 15px 30px;
   border-radius: 15px;
 }
+.add-admin-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 30px;
+}
+.admin-list {
+  padding: 10px;
+  margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fafafa;
+    transition: border 0.2s;
+  }
+
+  .save-btn {
+    padding: 10px;
+    background-color: #2CA58D; /* Your Teal Accent */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .save-btn:hover {
+    background-color: #248a75;
+  }
+
+  .save-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }

@@ -10,7 +10,7 @@
   // We default to an empty string for ID if it's missing
   let safeOrg = $derived(org || { 
     orgID: "",
-    name: "Loading...", 
+    orgName: "Loading...", 
     followers: 0, 
     image: null, 
     foundedYear: "" 
@@ -33,9 +33,9 @@
   <section class="orgPfp">
     <div class="infoLine">
       {#if safeOrg.image}
-          <img src={safeOrg.image} alt={safeOrg.name} width="80" height="80" />
+          <img src={safeOrg.image} alt={safeOrg.orgName} width="80" height="80" />
       {/if}
-      <p>{safeOrg.name}</p>
+      <p>{safeOrg.orgName}</p>
     </div>
     <p>Org Since: {safeOrg.foundedYear}</p>
     <p>Members: {safeOrg.followers}</p>
@@ -44,24 +44,29 @@
   <section class="buttons">
     <ul>
       <li>
-        <Icon icon="fa7-solid:house-chimney" width="30" height="30" />
-        <a href="/adminHome?orgId={currentId}">Home</a>
+       
+        <a href="/adminHome?orgId={currentId}"> <Icon icon="fa7-solid:house-chimney" width="30" height="30" />
+          Home</a>
       </li>
       <li>
-        <Icon icon="mdi:calendar" width="30" height="30" />
-        <a href="/adminEventCalendar?orgId={currentId}">Event Calendar</a>
+       
+        <a href="/adminEventCalendar?orgId={currentId}"> <Icon icon="mdi:calendar" width="30" height="30" />
+          Event Calendar</a>
       </li>
       <li>
-        <Icon icon="mdi:event-add" width="30" height="30" />
-        <a href="/adminNewEvent?orgId={currentId}">New Event</a>
+       
+        <a href="/adminNewEvent?orgId={currentId}"> <Icon icon="mdi:event-add" width="30" height="30" />
+          New Event</a>
       </li>
       <li>
-        <Icon icon="streamline:announcement-megaphone-remix" width="30" height="30" />
-        <a href="/adminNewAnnouncement?orgId={currentId}">New Announcement</a>
+       
+        <a href="/adminNewAnnouncement?orgId={currentId}"> <Icon icon="streamline:announcement-megaphone-remix" width="30" height="30" />
+          New Announcement</a>
       </li>
       <li>
-        <Icon icon="majesticons:users-line" width="30" height="30" />
-        <a href="/adminMemberList?orgId={currentId}">Member List</a>
+        
+        <a href="/adminMemberList?orgId={currentId}"><Icon icon="majesticons:users-line" width="30" height="30" />
+          Member List</a>
       </li>
       <li>
         <Icon icon="solar:settings-outline" width="30" height="30" />

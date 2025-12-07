@@ -6,4 +6,5 @@ export { default as AdminFooter} from "./adminFooter/adminFooter.svelte"
 export { default as Event } from "./event/event.svelte";
 export { default as EventCard } from "./eventCard/eventCard.svelte";
 export { default as Org } from "./organization/organization.svelte";
+export { default as EventForm } from "./eventForm/eventForm.svelte";
 

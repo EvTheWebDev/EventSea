@@ -57,13 +57,13 @@
   }
 </script>
 
-<div class="calendar-container">
-  
+<div class="pageContent">
+  <div class="calendar-container">
   <div class="topRow">
     <h1>Admin Event Calendar</h1>
     <div class="addEventButton">
       <a href="/adminNewEvent?orgId={currentOrgId}">
-        <button class="btn-primary">+ Add New Event</button>
+        <button class="eventBtn btn-primary">+ Add New Event</button>
       </a>
     </div>
   </div>
@@ -83,4 +83,5 @@
     </div>
   {/if}
 
+</div>
 </div>

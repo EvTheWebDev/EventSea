@@ -30,12 +30,13 @@
   margin-bottom: 2rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
-}
-h1 {
+  h1 {
   color: #1b065e;
   margin: 0;
 }
-.btn-primary {
+}
+
+.eventBtn {
   background-color: #2ca58d;
   color: white;
   border: none;

@@ -1,0 +1,88 @@
+.split-page-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+  gap: 20px;
+}
+.form-section {
+  flex: 1;
+  padding: 40px;
+  background: white;
+}
+.preview-section {
+  flex: 1;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+.preview-sticky {
+  position: sticky;
+  top: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card-wrapper {
+  transform: scale(1.1);
+  pointer-events: none;
+  margin-top: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+.half {
+  flex: 2;
+}
+.quarter {
+  flex: 1;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #fafafa;
+}
+textarea {
+  resize: vertical!important;
+  min-height: 100px;
+}
+
+.button-row {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+.submit-btn {
+  flex: 2;
+  background-color: #2ca58d;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cancel-btn {
+  flex: 1;
+  border: 2px solid #ccc;
+  background: transparent;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .split-page-container {
+    flex-direction: column;
+  }
+}

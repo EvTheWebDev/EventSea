@@ -3,8 +3,8 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 350px; /* Matches the vertical card style */
     font-family: 'Segoe UI', sans-serif;
+    min-width: 300px;
   }
 
   .image-container {
@@ -27,7 +27,7 @@
   }
 
   h3 {
-    color: #1B065E; /* Dark Purple from your theme */
+    color: #1B065E; 
     margin: 0 0 5px 0;
     font-size: 1.4rem;
   }
@@ -41,7 +41,7 @@
   }
 
   .org-name {
-    color: #A997DF; /* Light purple link color */
+    color: #A997DF; 
     text-decoration: underline;
     font-weight: bold;
     cursor: pointer;
@@ -74,16 +74,15 @@
     flex: 1;
     padding: 10px;
     border: 2px solid #1B065E;
-    background: #1B065E; /* Solid Purple */
-    color: white;         /* White Text */
-    border-radius: 12px;
+    background: #1B065E;
+    color: white;         
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
   }
 
   .btn-primary:hover {
-    background: #3a1c92; /* Slightly lighter purple on hover */
+    background: #3a1c92; 
     border-color: #3a1c92;
   }
 

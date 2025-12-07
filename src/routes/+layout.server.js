@@ -25,7 +25,7 @@ export const load = async ({ url }) => {
     // Default fallback data
     let navData = {
       orgID: orgId, // Keep the ID so the nav links work!
-      name: "Loading...",
+      orgName: "Loading...",
       followers: 0,
       image: null, 
       foundedYear: "..."
@@ -35,9 +35,9 @@ export const load = async ({ url }) => {
       const d = orgSnap.data();
       navData = {
         orgID: orgSnap.id, // Ensure ID is included in the object
-        name: d.name || d.orgName || "Unnamed Org", // Check both common field names
+        orgName: d.orgName || d.name || "Unnamed Org", // Check both common field names
         followers: d.followers || 0,
-        image: d.image || null,
+        image: d.image || "/blankUser.png",
         foundedYear: d.foundedYear || "2025" 
       };
     }

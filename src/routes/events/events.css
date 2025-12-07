@@ -55,3 +55,54 @@
 .eventsPage .eventCard {
     margin-bottom: 50px;
 }
+
+.eventsPage {
+    min-height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.eventsHero {
+    /* Add your hero image background styles here */
+    background-color: #1B065E; /* Fallback color */
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.eventsContainer {
+    max-width: 90%;
+}
+
+/* Filter Bar Styling */
+.filters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    justify-content: center; /* Or flex-start */
+}
+
+.search, .filter, .sort {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: #1B065E;
+}
+
+/* THE GRID LAYOUT */
+.events-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.status {
+    text-align: center;
+    padding: 50px;
+    color: #666;
+    font-size: 1.2rem;
+}

@@ -184,11 +184,11 @@
             </div>
             <div class="form-group quarter">
                 <label for="start">Start</label>
-                <input type="time" id="start" bind:value={startTime} required />
+                <input type="time" id="start" bind:value={startTime} step="900" required />
             </div>
             <div class="form-group quarter">
                 <label for="end">End</label>
-                <input type="time" id="end" bind:value={endTime} required />
+                <input type="time" id="end" bind:value={endTime} step="900" required />
             </div>
         </div>
 

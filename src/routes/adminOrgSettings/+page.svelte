@@ -28,7 +28,7 @@
   // Org Data
   let orgName = "";
   let orgEmail = ""; // Read-only usually, but good to show
-  let orgImage = null;
+  let orgImage = "/blankUser.png"; // Default placeholder
   let adminList = []; // Array of UIDs or User Objects if you fetch them
 
   // Editing State
@@ -57,7 +57,7 @@
 
       if (snap.exists()) {
         const data = snap.data();
-        orgName = data.name;
+        orgName = data.orgName;
         orgEmail = data.email;
         orgImage = data.image;
         adminList = data.adminUids || [data.adminUid]; // Handle array or single string legacy
@@ -105,10 +105,11 @@
       if (editedName !== orgName) {
         const orgRef = doc(db, "orgs", orgId);
         await updateDoc(orgRef, {
-            name: editedName
+            orgName: editedName
         });
         orgName = editedName;
         successMsg = "Organization profile updated!";
+        window.location.reload();
       }
       editMode = false;
     } catch (err) {
@@ -250,7 +251,7 @@
         </div>
       </div>
 
-      <div class="profileOrgs" style="margin-top: 30px;">
+      <div class="manageAdmins" style="margin-top: 30px;">
         <h2>Manage Admins</h2>
         <p class="subtitle">Grant other users access to manage this organization.</p>
         
@@ -262,7 +263,7 @@
                 class="name-input"
                 style="margin-bottom: 0; width: 70%;"
             />
-            <button class="save-button" on:click={handleAddAdmin}>Add Admin</button>
+            <button class="save-btn" on:click={handleAddAdmin}>Add Admin</button>
         </div>
 
         <div class="admin-list">

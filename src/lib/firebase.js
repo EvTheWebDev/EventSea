@@ -22,6 +22,8 @@ import {
   query,
   where,
   getDocs,
+  limit,
+  orderBy
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -302,8 +304,6 @@ async function getImageFromCollection(collectionName, docId, fieldName) {
    ============================== */
 
 /**
- * Creates a new Organization and links it to the current User.
- * Uses a Batch write to ensure both happen or neither happens.
  * * @param {string} uid - The ID of the user creating the org.
  * @param {string} orgName - The display name of the org.
  * @param {string} orgEmail - The contact email for the org.
@@ -312,11 +312,10 @@ async function getImageFromCollection(collectionName, docId, fieldName) {
 export async function createOrganization(uid, orgName, orgEmail) {
   const batch = writeBatch(db);
 
-  // 1. Create a reference for the new Org
   const newOrgRef = doc(collection(db, "orgs"));
   
   const orgData = {
-    name: orgName,
+    orgName: orgName,
     email: orgEmail,
     adminUid: uid, 
     createdAt: serverTimestamp(),
@@ -325,7 +324,6 @@ export async function createOrganization(uid, orgName, orgEmail) {
 
   batch.set(newOrgRef, orgData);
 
-  // 2. Update the User: Add to the ARRAY of managed IDs
   const userRef = doc(db, "users", uid);
   batch.update(userRef, {
     // This allows multiple orgs!
@@ -345,7 +343,6 @@ export async function createOrganization(uid, orgName, orgEmail) {
 export async function checkUserAdminStatus(uid) {
   const userProfile = await getUserProfile(uid);
   
-  // Check for the new array field
   if (userProfile && userProfile.managedOrgIDs && userProfile.managedOrgIDs.length > 0) {
     return userProfile.managedOrgIDs; 
   }
@@ -364,8 +361,7 @@ export async function getOrgsByIds(orgIds) {
   if (!orgIds || orgIds.length === 0) return [];
 
   const orgsRef = collection(db, "orgs");
-  // Firestore "in" query allows fetching documents where the field is in a specific array
-  // Note: We use documentId() to query by the document's actual ID key
+ 
   const q = query(orgsRef, where(documentId(), "in", orgIds));
   
   const querySnapshot = await getDocs(q);
@@ -374,4 +370,109 @@ export async function getOrgsByIds(orgIds) {
     orgs.push({ id: doc.id, ...doc.data() });
   });
   return orgs;
+}
+
+
+/**
+ * Fetches events based on filters.
+ * @param {Object} options
+ * @param {'trending' | 'org' | 'all'} [options.mode='all'] 
+ * @param {string} [options.orgId] 
+ * @param {string} [options.userId]
+ * @param {number} [options.limitCount] 
+ * @returns {Promise<Array>}
+ */
+export async function fetchEvents({ mode = 'all', orgId, userId, limitCount } = {}) {
+  try {
+    const eventsRef = collection(db, "events");
+    let q;
+
+    switch (mode) {
+      case 'trending':
+        q = query(
+            eventsRef, 
+            orderBy("createdAt", "desc"), 
+            limit(limitCount || 3)
+        );
+        break;
+
+      case 'org':
+        if (!orgId) throw new Error("Org ID required for org fetch");
+        q = query(
+            eventsRef, 
+            where("ORG_ID", "==", orgId), 
+            orderBy("createdAt", "desc")
+        );
+        break;
+
+        case 'myEvents':
+        if (!userId) throw new Error("User ID required");
+        q = query(eventsRef, where("rsvps", "array-contains", userId));
+        break;
+        
+      case 'all':
+      default:
+        q = query(eventsRef, orderBy("DATE", "asc"));
+        break;
+    }
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt ? data.createdAt.toMillis() : null,
+      };
+    });
+
+  } catch (err) {
+    console.error(`Error fetching events (${mode}):`, err);
+    return [];
+  }
+}
+
+/**
+ * Fetches organizations based on filters.
+ * @param {Object} options
+ * @param {'featured' | 'all' | 'myOrgs'} [options.mode='all'] 
+ * @param {string} [options.userId] 
+ * @param {number} [options.limitCount] 
+ * @returns {Promise<Array>}
+ */
+export async function fetchOrgs({ mode = 'all', userId, limitCount } = {}) {
+  try {
+    const orgsRef = collection(db, "orgs");
+    let q;
+
+    switch (mode) {
+      case 'featured':
+        // Just grab the first X orgs (or sort by 'followers' if you have an index)
+        q = query(orgsRef, limit(limitCount || 3));
+        break;
+
+      case 'myOrgs':
+        if (!userId) throw new Error("User ID required");
+        q = query(orgsRef, where("followers", "array-contains", userId));
+        break;
+        
+      case 'all':
+      default:
+        // Sort A-Z
+        q = query(orgsRef, orderBy("orgName", "asc"));
+        break;
+    }
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+
+  } catch (err) {
+    console.error(`Error fetching orgs (${mode}):`, err);
+    return [];
+  }
 }

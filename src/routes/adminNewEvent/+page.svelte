@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -98,7 +98,8 @@
       await addDoc(collection(db, "events"), newEvent);
 
       alert("Event Created Successfully!");
-      goto(`/adminHome?orgId=${orgId}`); // Send them back to dashboard
+      goto(`/adminHome?orgId=${orgId}`);
+      window.location.reload();
 
     } catch (err) {
       console.error(err);
@@ -141,11 +142,11 @@
         </div>
         <div class="form-group quarter">
             <label for="start">Start</label>
-            <input type="time" id="start" bind:value={startTime} required />
+            <input type="time" id="start" bind:value={startTime} step="900" required />
         </div>
         <div class="form-group quarter">
             <label for="end">End</label>
-            <input type="time" id="end" bind:value={endTime} required />
+            <input type="time" id="end" bind:value={endTime} step="900" required />
         </div>
       </div>
 
@@ -177,4 +178,62 @@
     </div>
   </div>
 
-</div>
+</div> -->
+
+
+<script>
+  import { goto } from "$app/navigation";
+  import EventForm from "$lib/eventForm/eventForm.svelte"; 
+  import { db } from "../../lib/firebase"; 
+  import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+  import './adminNewEvent.css';
+
+  let { data } = $props();
+  // We default to an empty object to prevent "cannot read property of undefined"
+  let orgData = $derived(data.userOrg || {
+      orgName: "",
+      name: "",
+      orgID: ""
+  });
+  let orgId = $derived(data.userOrg?.orgID || "");
+  let saving = $state(false);
+
+  async function handleSave(event) {
+    // 1. Receive data + base64 string from component
+    const { formData, finalImage } = event.detail;
+    saving = true;
+
+    try {
+      // FIX 1: Robust Name Check
+      // We check orgName (new) -> name (old) -> default
+      const safeOrgName = orgData.orgName || orgData.name || "My Organization";
+      const safeImg = finalImage || "/placeholder.jpg";
+      const newEvent = {
+        ...formData,
+        IMAGE_URL: safeImg, 
+        ORG_ID: orgId,
+        
+        // Use the safe variable here
+        orgName: safeOrgName,
+        
+        createdAt: serverTimestamp()
+      };
+
+      await addDoc(collection(db, "events"), newEvent);
+      alert("Event Created!");
+      window.location.href = `/adminHome?orgId=${orgId}`;
+      
+    } catch (err) {
+      console.error(err);
+      alert("Error: " + err.message);
+    } finally {
+      saving = false;
+    }
+  }
+</script>
+
+<EventForm 
+    orgName={orgData.orgName || orgData.name || "My Organization"} 
+    saving={saving}
+    on:save={handleSave} 
+/>

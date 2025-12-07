@@ -72,4 +72,13 @@
     flex-direction: row; 
     margin-bottom: 0;   
   }
+
+  .app-shell.admin-layout {
+    flex-direction: row;
+}
+
+.app-shell.admin-layout main {
+    display: flex;
+    flex-direction: column;
+}
 </style>
