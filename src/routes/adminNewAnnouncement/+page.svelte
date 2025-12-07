@@ -6,4 +6,8 @@ import { AdminNav } from "$lib"
 
 <div class="pageContent">
     <h1>Create a New Announcement</h1>
+    <div class="comingSoonPopup">
+        <h2>Coming Soon!</h2>
+        <p>This feature is under development and will be available soon. Stay tuned!</p>
+    </div>
 </div>

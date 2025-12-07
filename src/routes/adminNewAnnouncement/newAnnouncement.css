@@ -1,9 +1,21 @@
-.wholePage {
-    display: flex;
-    height: 90vh;
-    .siteContent {
-        padding: 20px;
-        
+.pageContent {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    .comingSoonPopup {
+        border: 2px dashed #1B065E;
+        padding: 40px;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        margin-top: 50px;
+        h2 {
+            color: #1B065E;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #333;
+            font-size: 1.1rem;
+        }
     }
-    margin-bottom: -150px;
 }

@@ -76,64 +76,73 @@
   }
 
   /* --- Section 2: Wave Banner --- */
-  .wave-banner {
-    width: 100%;
-    background-color: #A997DF; /* The purple fill */
+ .wave-banner {
     position: relative;
-    padding: 40px 0 80px 0;
-    text-align: center;
-    margin-bottom: 40px;
-    color: #1B065E;
-  }
+    width: 100%;
+    background-color: #A997DF; /* Match the SVG color */
+    padding: 20px 0; /* Add padding so text doesn't hit the edges */
+    margin: 150px 0; /* Add margin so it doesn't overlap other sections */
+}
 
-  .wave-shape-top {
+/* 2. Generic Shape Settings */
+.wave-shape {
     position: absolute;
-    top: -100px; /* Adjust based on SVG height to pull it up */
     left: 0;
     width: 100%;
     line-height: 0;
-    z-index: 0;
-  }
+}
 
-  .wave-shape-top svg {
+.wave-shape svg {
     display: block;
-    width: 100%;
-    height: 100px;
-  }
+    width: 100%; /* Stretch to fit */
+    height: 180px; /* Adjust height of the wave spikes */
+}
 
-  .banner-content {
+/* 3. Top Wave Specifics */
+.wave-shape.top {
+    transform: translateY(-100%); /* Push it UP outside the box */
+}
+
+/* 4. Bottom Wave Specifics */
+.wave-shape.bottom {
+    bottom: 0px; /* Align to bottom edge */
+    transform: translateY(100%) rotate(180deg); /* Push DOWN and FLIP */
+}
+
+/* Existing Content Styles... */
+.banner-content {
+    text-align: center;
+    color: white;
     position: relative;
-    z-index: 1; /* Ensures text sits on top of any background graphics */
-  }
+    z-index: 2;
+}
 
-  .banner-content h2 {
-    font-size: 2rem;
-    margin-bottom: 30px;
-    font-weight: bold;
-  }
-
-  .banner-actions {
+.banner-actions {
     display: flex;
     justify-content: center;
-    gap: 40px;
-  }
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
 
-  .btn-banner {
-    background: transparent;
-    border: 2px solid #1B065E;
-    padding: 15px 30px;
-    border-radius: 10px;
-    font-size: 1.1rem;
+.btn-banner {
+    background: white;
+    color: #A997DF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
     font-weight: bold;
-    color: #1B065E;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.2); /* Slight frosted glass effect */
-  }
+    transition: all 0.2s;
+}
 
-  .btn-banner:hover {
-    background: #1B065E;
+.btn-banner:hover {
+    transform: scale(1.05);
+    border: 2px solid white;
+    background-color: #A997DF;
     color: white;
-  }
+    margin-bottom: -10px;
+}
 
   /* --- Section 3: Events --- */
   .events-section {

@@ -1,4 +1,4 @@
- .card {
+.card {
     background: white;
     border-radius: 20px;
     overflow: hidden;
@@ -69,3 +69,29 @@
     background: #1B065E;
     color: white;
   }
+
+  .btn-primary {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #1B065E;
+    background: #1B065E; /* Solid Purple */
+    color: white;         /* White Text */
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #3a1c92; /* Slightly lighter purple on hover */
+    border-color: #3a1c92;
+  }
+
+  .delete-btn {
+        border-color: #d9534f;
+        color: #d9534f;
+    }
+    .delete-btn:hover {
+        background-color: #d9534f;
+        color: white;
+    }

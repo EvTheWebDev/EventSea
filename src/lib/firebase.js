@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -6,9 +5,9 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateEmail,
+  updateProfile,
 } from "firebase/auth";
-import { updateEmail } from "firebase/auth";
-import { updateProfile } from "firebase/auth";
 import {
   getFirestore,
   doc,
@@ -16,10 +15,15 @@ import {
   serverTimestamp,
   getDoc,
   updateDoc,
+  writeBatch,
+  collection,
+  arrayUnion,
+  documentId,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA04n74SGTp7dKqXFl6Udy3ryfDx1uX2b8",
   authDomain: "eventsea-12963.firebaseapp.com",
@@ -29,22 +33,35 @@ const firebaseConfig = {
   appId: "1:869381378518:web:e4b99830faaa5922b8d477",
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export { auth, app };
 
+/* ==============================
+   USER PROFILE FUNCTIONS
+   ============================== */
+
+/**
+ * @typedef {Object} UserProfile
+ * @property {string} [firstName]
+ * @property {string} [lastName]
+ * @property {string[]} [managedOrgIDs] - Note the capital ID to match your DB
+ * @property {string} [email]
+ * @property {string} [profilePicture]
+ */
+
 /**
  * Get a user's profile document from Firestore.
  * @param {string} uid
- * @returns {Promise<Object|null>}
+ * @returns {Promise<UserProfile|null>} 
  */
 export async function getUserProfile(uid) {
   const ref = doc(db, "users", uid);
   const snap = await getDoc(ref);
-  return snap.exists() ? snap.data() : null;
+  // We tell the editor "Trust me, this data matches the UserProfile shape"
+  return snap.exists() ? /** @type {UserProfile} */ (snap.data()) : null;
 }
 
 /**
@@ -54,7 +71,6 @@ export async function getUserProfile(uid) {
  * @param {string} lastName
  */
 export async function changeUserProfile(uid, firstName, lastName) {
-  // Update Firebase Auth displayName if current user matches
   if (auth.currentUser && auth.currentUser.uid === uid) {
     try {
       await updateProfile(auth.currentUser, {
@@ -65,7 +81,6 @@ export async function changeUserProfile(uid, firstName, lastName) {
     }
   }
 
-  // Update Firestore user doc
   const userRef = doc(db, "users", uid);
   try {
     await updateDoc(userRef, {
@@ -74,7 +89,6 @@ export async function changeUserProfile(uid, firstName, lastName) {
       profileUpdatedAt: serverTimestamp(),
     });
   } catch (err) {
-    // if doc doesn't exist, create it
     await setDoc(userRef, {
       firstName: firstName || null,
       lastName: lastName || null,
@@ -90,9 +104,9 @@ export async function changeUserProfile(uid, firstName, lastName) {
  */
 export async function changeUserEmail(newEmail) {
   if (!auth.currentUser) throw new Error("No authenticated user");
-  // Update Auth email
+
   await updateEmail(auth.currentUser, newEmail);
-  // Update Firestore user doc if exists
+
   try {
     const userRef = doc(db, "users", auth.currentUser.uid);
     await updateDoc(userRef, {
@@ -100,17 +114,14 @@ export async function changeUserEmail(newEmail) {
       profileUpdatedAt: serverTimestamp(),
     });
   } catch (err) {
-    // ignore Firestore update failures (auth changed)
     console.warn("Failed to update user email in Firestore:", err);
   }
 }
 
-/**
- * Sign up a new user using email/password.
- * @param {string} email
- * @param {string} password
- * @returns {Promise<import("firebase/auth").UserCredential>}
- */
+/* ==============================
+   AUTH FUNCTIONS
+   ============================== */
+
 /**
  * Sign up a new user using email/password and save profile data.
  * @param {string} email
@@ -120,24 +131,20 @@ export async function changeUserEmail(newEmail) {
  * @returns {Promise<import("firebase/auth").UserCredential>}
  */
 export async function signUp(email, password, firstName = "", lastName = "") {
-  // create the user
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
     password
   );
 
-  // update the Firebase user profile displayName
   try {
     await updateProfile(userCredential.user, {
       displayName: `${firstName} ${lastName}`.trim(),
     });
   } catch (err) {
-    // non-fatal: profile update failed, but user account exists
     console.warn("Failed to update user profile:", err);
   }
 
-  // persist user profile in Firestore for later use
   try {
     await setDoc(doc(db, "users", userCredential.user.uid), {
       firstName: firstName || null,
@@ -172,6 +179,63 @@ export async function logOut() {
 }
 
 /**
+ * Subscribe to auth state changes.
+ * @param {(user: import("firebase/auth").User|null) => void} cb
+ * @returns {() => void} unsubscribe function
+ */
+export function onAuthStateListener(cb) {
+  return onAuthStateChanged(auth, cb);
+}
+
+/* ==============================
+   IMAGE HANDLING FUNCTIONS
+   ============================== */
+
+/**
+ * Upload a profile picture for a USER.
+ * Saves to 'users' collection under field 'profilePicture'.
+ * @param {string} uid - The User ID.
+ * @param {File} file - The image file.
+ * @returns {Promise<string>} The saved Base64 string.
+ */
+export async function uploadProfilePicture(uid, file) {
+  return saveImageToCollection("users", uid, "profilePicture", file);
+}
+
+/**
+ * Fetch user's profile picture from Firestore.
+ * @param {string} uid
+ * @returns {Promise<string|null>} data URL or null if not found
+ */
+export async function getProfilePicture(uid) {
+  return getImageFromCollection("users", uid, "profilePicture");
+}
+
+/**
+ * Upload a profile picture/logo for an ORGANIZATION.
+ * Saves to 'orgs' collection under field 'image'.
+ * @param {string} orgId - The Organization ID.
+ * @param {File} file - The image file.
+ * @returns {Promise<string>} The saved Base64 string.
+ */
+export async function uploadOrgPicture(orgId, file) {
+  return saveImageToCollection("orgs", orgId, "image", file);
+}
+
+/**
+ * Fetch an ORGANIZATION'S profile picture/logo.
+ * @param {string} orgId - The Organization ID.
+ * @returns {Promise<string | null>} The Base64 string or null.
+ */
+export async function getOrgPicture(orgId) {
+  return getImageFromCollection("orgs", orgId, "image");
+}
+
+/* ==============================
+   INTERNAL HELPER FUNCTIONS
+   ============================== */
+
+/**
  * Convert File to base64 data URL.
  * @param {File} file
  * @returns {Promise<string>} base64 data URL
@@ -181,7 +245,6 @@ function fileToBase64(file) {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result;
-      // result is a data URL like "data:image/jpeg;base64,..."
       resolve(/** @type {string} */ (result));
     };
     reader.onerror = reject;
@@ -190,55 +253,125 @@ function fileToBase64(file) {
 }
 
 /**
- * Upload a profile picture for the user (stored as base64 in Firestore).
- * @param {string} uid
+ * Saves a base64 image to a specific field in any Firestore collection.
+ * @param {string} collectionName
+ * @param {string} docId
+ * @param {string} fieldName
  * @param {File} file
- * @returns {Promise<string>} data URL for immediate display
+ * @returns {Promise<string>}
  */
-export async function uploadProfilePicture(uid, file) {
-  // Convert file to base64
+async function saveImageToCollection(collectionName, docId, fieldName, file) {
   const base64 = await fileToBase64(file);
+  const docRef = doc(db, collectionName, docId);
 
-  // Store in Firestore user document
-  const userRef = doc(db, "users", uid);
+  const updateData = {
+    [fieldName]: base64,
+    [`${fieldName}UpdatedAt`]: serverTimestamp(),
+  };
+
   try {
-    await updateDoc(userRef, {
-      profilePicture: base64,
-      profilePictureUpdatedAt: serverTimestamp(),
-    });
+    await updateDoc(docRef, updateData);
   } catch (err) {
-    // If user doc doesn't exist, create it
-    await setDoc(userRef, {
-      profilePicture: base64,
-      profilePictureUpdatedAt: serverTimestamp(),
-    });
+    await setDoc(docRef, updateData, { merge: true });
   }
 
-  // Return the data URL for immediate display
   return base64;
 }
 
 /**
- * Fetch user's profile picture from Firestore.
- * @param {string} uid
- * @returns {Promise<string|null>} data URL or null if not found
+ * Fetches an image string from any Firestore collection.
+ * @param {string} collectionName
+ * @param {string} docId
+ * @param {string} fieldName
+ * @returns {Promise<string | null>}
  */
-export async function getProfilePicture(uid) {
+async function getImageFromCollection(collectionName, docId, fieldName) {
   try {
-    const userRef = doc(db, "users", uid);
-    const snap = await getDoc(userRef);
+    const docRef = doc(db, collectionName, docId);
+    const snap = await getDoc(docRef);
     const data = snap.data();
-    return data?.profilePicture || null;
+    return data?.[fieldName] || null;
   } catch (err) {
+    console.error(`Error fetching image from ${collectionName}:`, err);
     return null;
   }
 }
 
+/* ==============================
+   ORGANIZATION MANAGEMENT
+   ============================== */
+
 /**
- * Subscribe to auth state changes.
- * @param {(user: import("firebase/auth").User|null) => void} cb
- * @returns {() => void} unsubscribe function
+ * Creates a new Organization and links it to the current User.
+ * Uses a Batch write to ensure both happen or neither happens.
+ * * @param {string} uid - The ID of the user creating the org.
+ * @param {string} orgName - The display name of the org.
+ * @param {string} orgEmail - The contact email for the org.
+ * @returns {Promise<string>} The new Organization ID.
  */
-export function onAuthStateListener(cb) {
-  return onAuthStateChanged(auth, cb);
+export async function createOrganization(uid, orgName, orgEmail) {
+  const batch = writeBatch(db);
+
+  // 1. Create a reference for the new Org
+  const newOrgRef = doc(collection(db, "orgs"));
+  
+  const orgData = {
+    name: orgName,
+    email: orgEmail,
+    adminUid: uid, 
+    createdAt: serverTimestamp(),
+    image: null, 
+  };
+
+  batch.set(newOrgRef, orgData);
+
+  // 2. Update the User: Add to the ARRAY of managed IDs
+  const userRef = doc(db, "users", uid);
+  batch.update(userRef, {
+    // This allows multiple orgs!
+    managedOrgIDs: arrayUnion(newOrgRef.id), 
+    isOrgAdmin: true, 
+  });
+
+  await batch.commit();
+  return newOrgRef.id;
+}
+
+/**
+ * Checks if the current user manages organization(s).
+ * @param {string} uid 
+ * @returns {Promise<string[]|null>} Returns an ARRAY of Org IDs, or null.
+ */
+export async function checkUserAdminStatus(uid) {
+  const userProfile = await getUserProfile(uid);
+  
+  // Check for the new array field
+  if (userProfile && userProfile.managedOrgIDs && userProfile.managedOrgIDs.length > 0) {
+    return userProfile.managedOrgIDs; 
+  }
+  
+  
+
+  return null;
+}
+
+/**
+ * Fetch multiple organizations by their IDs.
+ * @param {string[]} orgIds - Array of organization IDs.
+ * @returns {Promise<Array>} Array of org objects containing { id, ...data }.
+ */
+export async function getOrgsByIds(orgIds) {
+  if (!orgIds || orgIds.length === 0) return [];
+
+  const orgsRef = collection(db, "orgs");
+  // Firestore "in" query allows fetching documents where the field is in a specific array
+  // Note: We use documentId() to query by the document's actual ID key
+  const q = query(orgsRef, where(documentId(), "in", orgIds));
+  
+  const querySnapshot = await getDocs(q);
+  const orgs = [];
+  querySnapshot.forEach((doc) => {
+    orgs.push({ id: doc.id, ...doc.data() });
+  });
+  return orgs;
 }

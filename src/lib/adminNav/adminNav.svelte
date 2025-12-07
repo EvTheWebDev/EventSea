@@ -1,18 +1,32 @@
 <script>
   import "./adminNav.css";
-  
-  let { org } = $props();
+  import Icon from '@iconify/svelte';
+  import { logOut } from "$lib/firebase"; // Adjust path to firebase.js
+  import { goto } from "$app/navigation";
 
-  console.log("Admin Nav Org Data:", org);
+  let { org } = $props();
   
-  // Create a safe fallback if 'org' is missing/null
-  // This prevents "Cannot read properties of undefined" errors
-  let safeOrg = org || { 
+  // 1. SAFELY DERIVE DATA
+  // We default to an empty string for ID if it's missing
+  let safeOrg = $derived(org || { 
+    orgID: "",
     name: "Loading...", 
     followers: 0, 
-    image: "", 
-    since: "" 
-  };
+    image: null, 
+    foundedYear: "" 
+  });
+
+  // 2. CREATE A VARIABLE FOR THE ID (Makes the HTML cleaner)
+  let currentId = $derived(safeOrg.orgID);
+
+  async function handleLogout() {
+    try {
+        await logOut();
+        goto("/adminLogin");
+    } catch (err) {
+        console.error(err);
+    }
+  }
 </script>
 
 <div class="sidebarNav">
@@ -20,45 +34,42 @@
     <div class="infoLine">
       {#if safeOrg.image}
           <img src={safeOrg.image} alt={safeOrg.name} width="80" height="80" />
-        {/if}
+      {/if}
       <p>{safeOrg.name}</p>
     </div>
     <p>Org Since: {safeOrg.foundedYear}</p>
     <p>Members: {safeOrg.followers}</p>
   </section>
+
   <section class="buttons">
     <ul>
       <li>
-        <iconify-icon icon="fa7-solid:house-chimney" width="30px" height="30px"
-        ></iconify-icon>
-        <a href="/adminHome">Home</a>
+        <Icon icon="fa7-solid:house-chimney" width="30" height="30" />
+        <a href="/adminHome?orgId={currentId}">Home</a>
       </li>
       <li>
-        <iconify-icon icon="mdi:calendar" width="30px" height="30px"
-        ></iconify-icon>
-        <a href="/adminEventCalendar">Event Calendar</a>
+        <Icon icon="mdi:calendar" width="30" height="30" />
+        <a href="/adminEventCalendar?orgId={currentId}">Event Calendar</a>
       </li>
       <li>
-        <iconify-icon icon="mdi:event-add" width="30" height="30"
-        ></iconify-icon>
-        <a href="/adminNewEvent">New Event</a>
+        <Icon icon="mdi:event-add" width="30" height="30" />
+        <a href="/adminNewEvent?orgId={currentId}">New Event</a>
       </li>
       <li>
-        <iconify-icon
-          icon="streamline:announcement-megaphone-remix"
-          width="30"
-          height="30"
-        ></iconify-icon>
-        <a href="/adminNewAnnouncement">New Announcement</a>
+        <Icon icon="streamline:announcement-megaphone-remix" width="30" height="30" />
+        <a href="/adminNewAnnouncement?orgId={currentId}">New Announcement</a>
       </li>
       <li>
-        <iconify-icon icon="majesticons:users-line" width="30" height="30"
-        ></iconify-icon>
-        <a href="/adminMemberList">Member List</a>
+        <Icon icon="majesticons:users-line" width="30" height="30" />
+        <a href="/adminMemberList?orgId={currentId}">Member List</a>
       </li>
-      <li class="logoutButton" id="adminLogout">
-        <iconify-icon icon="ic:round-exit-to-app" width="30" height="30"
-        ></iconify-icon>
+      <li>
+        <Icon icon="solar:settings-outline" width="30" height="30" />
+        <a href="/adminOrgSettings?orgId={currentId}">Org Settings</a>
+      </li>
+      
+      <li class="logoutButton" onclick={handleLogout} style="cursor: pointer;">
+        <Icon icon="ic:round-exit-to-app" width="30" height="30" />
         <span>Log Out</span>
       </li>
     </ul>

@@ -1,9 +1,0 @@
-.wholePage {
-    display: flex;
-    height: 90vh;
-    .siteContent {
-        padding: 20px;
-        
-    }
-    margin-bottom: -150px;
-}

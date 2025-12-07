@@ -2,34 +2,42 @@ import { db } from '$lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 export const load = async ({ url }) => {
-  // 1. CHECK: Are we actually on an admin page?
-  // We check if the path starts with '/admin'. 
-  // If not, we return null immediately to save database reads and avoid errors.
+  // 1. CHECK: Are we on an admin page?
   if (!url.pathname.startsWith('/admin')) {
     return { userOrg: null };
   }
 
-  // 2. If we ARE on an admin page, fetch the data
-  // (Eventually, you will get this ID from the authenticated user's session)
-  const testOrgId = "xB0ABinqEJVHA4ifZUVF"; 
+  // 2. GET THE ID FROM THE URL
+  // This is the magic step. We grab ?orgId=... from the browser bar
+  const orgId = url.searchParams.get('orgId');
+
+  // If no ID is in the URL (e.g. they just typed /adminHome), return null.
+  // The page component will handle redirecting them to login/select.
+  if (!orgId) {
+    return { userOrg: null };
+  }
 
   try {
-    const orgRef = doc(db, 'orgs', testOrgId);
+    // 3. FETCH THE SPECIFIC ORG
+    const orgRef = doc(db, 'orgs', orgId);
     const orgSnap = await getDoc(orgRef);
     
+    // Default fallback data
     let navData = {
-      name: "Your Org",
+      orgID: orgId, // Keep the ID so the nav links work!
+      name: "Loading...",
       followers: 0,
-      image: "https://via.placeholder.com/150", 
-      foundedYear: "2024"
+      image: null, 
+      foundedYear: "..."
     };
 
     if (orgSnap.exists()) {
       const d = orgSnap.data();
       navData = {
-        name: d.orgName || "Unnamed Org",
+        orgID: orgSnap.id, // Ensure ID is included in the object
+        name: d.name || d.orgName || "Unnamed Org", // Check both common field names
         followers: d.followers || 0,
-        image: d.image || "https://via.placeholder.com/150",
+        image: d.image || null,
         foundedYear: d.foundedYear || "2025" 
       };
     }
@@ -40,7 +48,6 @@ export const load = async ({ url }) => {
 
   } catch (err) {
     console.error("Layout Load Error:", err);
-    // If it fails, return null so the UI handles it gracefully
     return { userOrg: null };
   }
 };

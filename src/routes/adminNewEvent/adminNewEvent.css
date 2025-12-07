@@ -1,0 +1,132 @@
+ .split-page-container {
+    display: flex;
+    min-height: 100vh; /* Fill remaining height */
+    background-color: #f4f4f9;
+  }
+
+  /* --- LEFT: FORM --- */
+  .form-section {
+    flex: 1; /* Takes up 50-60% of space */
+    padding: 40px;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    z-index: 2;
+  }
+
+  .header h1 {
+    color: #1B065E;
+    margin-bottom: 10px;
+  }
+  .header p {
+    color: #666;
+    margin-bottom: 30px;
+  }
+
+  .event-form {
+    max-width: 600px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .row {
+    display: flex;
+    gap: 20px;
+  }
+  .half { flex: 2; }
+  .quarter { flex: 1; }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fafafa;
+    transition: border 0.2s;
+  }
+  
+  input:focus, textarea:focus {
+    border-color: #1B065E;
+    outline: none;
+    background: white;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #2CA58D; /* Your Teal Accent */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.2s;
+  }
+
+  .submit-btn:hover {
+    background-color: #248a75;
+  }
+
+  .submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  /* --- RIGHT: PREVIEW --- */
+  .preview-section {
+    flex: 1;
+    background-color: #e0e0e0; /* Slightly darker background to make card pop */
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .preview-sticky {
+    position: sticky;
+    top: 40px; /* Sticks as you scroll the form */
+    height: fit-content;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .preview-sticky h2 {
+    color: #1B065E;
+    margin-bottom: 5px;
+  }
+  .preview-sub {
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .card-wrapper {
+    /* Scale the card up slightly if it's too small */
+    transform: scale(1.1); 
+    pointer-events: none;
+  }
+
+  /* Responsive: Stack on mobile */
+  @media (max-width: 900px) {
+    .split-page-container {
+        flex-direction: column-reverse; /* Preview on top or bottom? Let's keep form on top usually */
+        flex-direction: column;
+    }
+    .preview-section {
+        padding: 20px;
+        background: #eee;
+    }
+  }
