@@ -1,5 +1,5 @@
 .adminLoginPage {
-    height: 100%;
+    min-height: 120%;
     padding: 20px;
     background-image: linear-gradient(
       #cdbff177,
@@ -21,6 +21,42 @@
                 font-family: 'Mont-Bold';            
             }
         }
+
+        .forms {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+@media (max-width: 800px) {
+                flex-direction: column;
+                .createOrgForm, .middleOr, .loginForm {
+                    margin-bottom: 20px;
+                }
+                .createOrgForm {
+                    margin-bottom: 50px;
+                }
+    
+}
+            
+            .createOrgForm, .loginForm {
+                background-color: #ffffffb3;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+                flex-direction: column;
+                margin: 20px;
+            }
+            .middleOr {
+                background-color: #ffffffb3;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            }
+        }
+        
     .adminForm {
         display: flex;
         align-items: center;
@@ -39,7 +75,9 @@
             padding-left: 10px;
         }
         button {
-            width: 100px;
+            width: max-content;
+            padding: 20px;
+
             height: 35px;
             border-radius: 25px;
             background-color: #2CA58D;
@@ -47,6 +85,9 @@
             font-family: 'Mont-Bold';
             font-size: 16px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 }

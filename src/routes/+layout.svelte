@@ -2,7 +2,9 @@
   import { onMount } from "svelte";
   import { messageStore } from "../store/message.js";
   import { page } from "$app/stores";
-  let { children } = $props();
+  let { children, data } = $props();
+
+  let orgData = $derived(data.userOrg || {});
   import "../global.css";
   import { Nav, Footer, AdminFooter, AdminNav } from "$lib";
 
@@ -43,7 +45,7 @@
   {:else if isAdminLogin}
     <!-- No Nav for Admin Login -->
   {:else}
-    <AdminNav />
+    <AdminNav org={orgData} />
   {/if}
 
   <div class="siteContent">

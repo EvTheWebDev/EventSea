@@ -1,16 +1,30 @@
 <script>
   import "./adminNav.css";
-  import Icon from "@iconify/svelte";
+  
+  let { org } = $props();
+
+  console.log("Admin Nav Org Data:", org);
+  
+  // Create a safe fallback if 'org' is missing/null
+  // This prevents "Cannot read properties of undefined" errors
+  let safeOrg = org || { 
+    name: "Loading...", 
+    followers: 0, 
+    image: "", 
+    since: "" 
+  };
 </script>
 
 <div class="sidebarNav">
   <section class="orgPfp">
     <div class="infoLine">
-      <img src="https://picsum.photos/50" alt="pfp Placeholder" />
-      <p>[ORG NAME]</p>
+      {#if safeOrg.image}
+          <img src={safeOrg.image} alt={safeOrg.name} width="80" height="80" />
+        {/if}
+      <p>{safeOrg.name}</p>
     </div>
-    <p>Org Since: [YEAR]</p>
-    <p>Members: [MEMBER COUNT]</p>
+    <p>Org Since: {safeOrg.foundedYear}</p>
+    <p>Members: {safeOrg.followers}</p>
   </section>
   <section class="buttons">
     <ul>

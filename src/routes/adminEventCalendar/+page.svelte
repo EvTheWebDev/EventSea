@@ -1,14 +1,3 @@
-<!-- <script>
-    import './adminEventCalendar.css';
-    import {AdminNav} from "$lib"
-  import AdminFooter from '$lib/adminFooter/adminFooter.svelte';
-</script>
-
-<div class="pageContent">
-    <h1>Event Calendar</h1>
-</div> -->
-
-
 <script>
   import EventCard from "$lib/eventCard/eventCard.svelte";
   
@@ -17,7 +6,15 @@
 </script>
 
 <div class="calendar-container">
-  <h1>Admin Event Calendar</h1>
+  <div class="topRow">
+    <h1>Admin Event Calendar</h1>
+    <div class="addEventButton">
+      <a href="/adminNewEvent">
+        <button>Add New Event</button>
+      </a>
+    </div>
+  </div>
+  
 
   {#if data.events && data.events.length > 0}
     <div class="events-grid">

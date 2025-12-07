@@ -7,3 +7,154 @@
     }
     margin-bottom: -150px;
 }
+
+.dashboard-container {
+    width: 100%;
+    min-height: 100vh;
+    background-color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    color: #1B065E;
+    font-size: 2rem;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  /* --- Section 1: Stats Cards --- */
+  .stats-grid {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 50px;
+    justify-content: center;
+  }
+
+  .stat-card {
+    background: #FFFAF5; /* Off-white card bg */
+    border-radius: 20px;
+    padding: 30px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    min-width: 200px;
+  }
+
+  .stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #1B065E;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 15px;
+  }
+
+  .btn-primary {
+    background-color: #A997DF;
+    color: #1B065E;
+    border: 2px solid #1B065E;
+    padding: 8px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background-color: #1B065E;
+    color: white;
+  }
+
+  /* --- Section 2: Wave Banner --- */
+  .wave-banner {
+    width: 100%;
+    background-color: #A997DF; /* The purple fill */
+    position: relative;
+    padding: 40px 0 80px 0;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #1B065E;
+  }
+
+  .wave-shape-top {
+    position: absolute;
+    top: -100px; /* Adjust based on SVG height to pull it up */
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    z-index: 0;
+  }
+
+  .wave-shape-top svg {
+    display: block;
+    width: 100%;
+    height: 100px;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 1; /* Ensures text sits on top of any background graphics */
+  }
+
+  .banner-content h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+
+  .banner-actions {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .btn-banner {
+    background: transparent;
+    border: 2px solid #1B065E;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1B065E;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2); /* Slight frosted glass effect */
+  }
+
+  .btn-banner:hover {
+    background: #1B065E;
+    color: white;
+  }
+
+  /* --- Section 3: Events --- */
+  .events-section {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+  }
+
+  .events-section h3 {
+    color: #1B065E;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
+
+  .events-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+  }
