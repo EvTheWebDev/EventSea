@@ -109,7 +109,7 @@
 </script>
 
 <nav>
-  <div class="logo">Logo</div>
+  <div class="logo">EventSea</div>
   <div class="links">
     <li class="menuItem"><a href="/">Home</a></li>
     <li class="menuItem">

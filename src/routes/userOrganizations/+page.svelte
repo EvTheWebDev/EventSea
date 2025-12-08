@@ -1,7 +1,6 @@
 <!-- <script>
   import { Org } from "$lib";
-  import "../../global.css";
-  import "../saved.css";
+
   import Icon from "@iconify/svelte";
 </script>
 
@@ -44,89 +43,73 @@
   </div>
 </main> -->
 
-
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    // Import your updated component
-    import Organization from "$lib/organization/organization.svelte"; 
-    import { auth, db } from "$lib/firebase"; 
-    import { collection, query, where, getDocs } from "firebase/firestore";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
+  // Import your updated component
+  import Organization from "$lib/organization/organization.svelte";
+  import { auth, db } from "$lib/firebase";
+  import { collection, query, where, getDocs } from "firebase/firestore";
+  import "../../global.css";
+  import "../saved.css";
 
-    let myOrgs = [];
-    let loading = true;
+  let myOrgs = [];
+  let loading = true;
 
-    onMount(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                await fetchMyOrgs(user.uid);
-            } else {
-                goto('/login');
-            }
-        });
-        return unsubscribe;
+  onMount(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        await fetchMyOrgs(user.uid);
+      } else {
+        goto("/login");
+      }
     });
+    return unsubscribe;
+  });
 
-    async function fetchMyOrgs(uid) {
-        try {
-            const orgsRef = collection(db, "orgs");
-            // QUERY: Find orgs where 'followers' array contains this UID
-            const q = query(orgsRef, where("followers", "array-contains", uid));
-            const snapshot = await getDocs(q);
-            
-            myOrgs = snapshot.docs.map(doc => ({ 
-                id: doc.id, 
-                ...doc.data() 
-            }));
-        } catch (err) {
-            console.error("Error fetching orgs:", err);
-        } finally {
-            loading = false;
-        }
-    }
+  async function fetchMyOrgs(uid) {
+    try {
+      const orgsRef = collection(db, "orgs");
+      // QUERY: Find orgs where 'followers' array contains this UID
+      const q = query(orgsRef, where("followers", "array-contains", uid));
+      const snapshot = await getDocs(q);
 
-    // Instant removal from list when unfollowing
-    function handleToggle(event) {
-        if (event.detail.status === false) {
-            myOrgs = myOrgs.filter(o => o.id !== event.detail.id);
-        }
+      myOrgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (err) {
+      console.error("Error fetching orgs:", err);
+    } finally {
+      loading = false;
     }
+  }
+
+  // Instant removal from list when unfollowing
+  function handleToggle(event) {
+    if (event.detail.status === false) {
+      myOrgs = myOrgs.filter((o) => o.id !== event.detail.id);
+    }
+  }
 </script>
 
 <div class="nav"></div>
 <div class="page-container">
-    <h1>My Organizations</h1>
-    <p class="subtitle">Organizations you follow.</p>
+  <h1>My Organizations</h1>
+  <p class="subtitle">Organizations you follow.</p>
 
-    {#if loading}
-        <div class="status">Loading...</div>
-    {:else if myOrgs.length > 0}
-        <div class="orgs-grid">
-            {#each myOrgs as org (org.id)}
-                <Organization {org} on:toggle={handleToggle} />
-            {/each}
-        </div>
-    {:else}
-        <div class="empty-state">
-            <h3>You aren't following any organizations yet.</h3>
-            <a href="/events" class="browse-link">Find Events & Orgs →</a>
-        </div>
-    {/if}
+  {#if loading}
+    <div class="status">Loading...</div>
+  {:else if myOrgs.length > 0}
+    <div class="orgs-grid">
+      {#each myOrgs as org (org.id)}
+        <Organization {org} on:toggle={handleToggle} />
+      {/each}
+    </div>
+  {:else}
+    <div class="empty-state">
+      <h3>You aren't following any organizations yet.</h3>
+      <a href="/events" class="browse-link">Find Events & Orgs →</a>
+    </div>
+  {/if}
 </div>
-
-<style>
-    .page-container { padding: 40px; max-width: 1200px; margin: 0 auto; }
-    h1 { color: #1B065E; margin-bottom: 10px; }
-    .subtitle { margin-bottom: 40px; color: #666; }
-    
-    .orgs-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 40px;
-        justify-content: center; /* Centers the cards if there are few */
-    }
-    
-    .status { text-align: center; padding: 50px; color: #888; }
-    .empty-state { text-align: center; background: white; padding: 60px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .browse-link { display: inline-block; margin-top: 20px; color: #2CA58D; font-weight: bold; text-decoration: none; }
-</style>

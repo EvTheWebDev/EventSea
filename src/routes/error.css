@@ -1,0 +1,23 @@
+.errorPage .errorDiv {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-top: 175px;
+    margin-bottom: 97px;
+}
+
+.errorPage h1 {
+    font-size: 75px;
+    font-family: "Gill-Bold";
+    color: #1b065e;
+    margin-bottom: 25px;
+}
+
+.errorDiv p {
+    font-size: 18px;
+}
+
+.errorDiv a {
+    color: #1b065e;
+    font-family: "Mont-Semi";
+}

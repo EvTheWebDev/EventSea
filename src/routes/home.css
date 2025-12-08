@@ -74,10 +74,11 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .trendingEventCards {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+    padding-bottom: 50px;
 }
 
 .category {

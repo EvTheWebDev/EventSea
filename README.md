@@ -69,6 +69,7 @@ npm run build
 
 - [ ] Secure authentication and authorization for users through University Single-Sign On
 - [ ] Basic announcement/messaging system
+- [ ] Executives on organization page
 - [ ] Event categorization, tagging, and filtering
 - [ ] Notification and email integration
 - [ ] Expanded collaboration tools between organizations

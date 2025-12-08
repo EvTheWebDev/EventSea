@@ -14,6 +14,11 @@ nav li {
     list-style: none;
 }
 
+nav .logo {
+    font-family: "Gill-Bold";
+    font-size: 28px;
+}
+
 nav .links {
     width: 35%;
     display: flex;

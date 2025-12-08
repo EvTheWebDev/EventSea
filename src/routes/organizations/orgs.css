@@ -28,6 +28,7 @@
 .orgContainer {
     margin: 0 auto;
     width: 90%;
+    margin-top: 75px;
 }
 
 .filters {

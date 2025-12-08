@@ -71,25 +71,26 @@
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import EventCard from "$lib/eventCard/eventCard.svelte";
-  import { fetchEvents } from "$lib/firebase"; 
+  import { fetchEvents } from "$lib/firebase";
 
   let events = [];
   let loading = true;
 
   onMount(async () => {
     try {
-        // Fetch all events 
-        events = await fetchEvents({ mode: 'all' });
+      // Fetch all events
+      events = await fetchEvents({ mode: "all" });
     } catch (err) {
-        console.error("Failed to load events:", err);
+      console.error("Failed to load events:", err);
     } finally {
-        loading = false;
+      loading = false;
     }
   });
 </script>
 
 <main class="eventsPage">
-  <div class="nav"></div> <div class="eventsHero">
+  <div class="nav"></div>
+  <div class="eventsHero">
     <div class="eventsText">
       <h2>Your adventure starts here.</h2>
       <h1>Upcoming Events</h1>
@@ -97,7 +98,7 @@
   </div>
 
   <div class="eventsContainer">
-    <div class="filters">
+    <!-- <div class="filters">
       <div class="search">
         <Icon icon="material-symbols:search-rounded" width="24" height="24" style="color: #1b065e;margin-right: 4px" />
         Search
@@ -110,7 +111,7 @@
         <Icon icon="material-symbols:sort-rounded" width="24" height="24" style="color: #1b065e;margin-right: 4px" />
         Sort
       </div>
-    </div>
+    </div> -->
 
     <div class="eventCards">
       {#if loading}
