@@ -20,7 +20,8 @@ nav .logo {
 }
 
 nav .links {
-    width: 35%;
+    max-width: 35%;
+    min-width: 500px;
     display: flex;
     justify-content: space-between;
     align-items: center;

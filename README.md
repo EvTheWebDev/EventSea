@@ -75,4 +75,5 @@ npm run build
 - [ ] Expanded collaboration tools between organizations
 - [ ] A post/social feed
 
-## Web4 Link
+## Vercel Deployment Link
+https://event-sea.vercel.app/ 
