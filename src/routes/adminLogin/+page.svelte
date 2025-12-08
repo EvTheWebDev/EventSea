@@ -152,7 +152,10 @@
   {:else}
     <div class="loginFormHolder">
         <div class="logoHolder">
-        <h1>LOGO HERE</h1>
+          <div class="logo">
+            <h1>EventSea Admin</h1>
+          </div>
+        
         </div>
         <div class="forms">
         
