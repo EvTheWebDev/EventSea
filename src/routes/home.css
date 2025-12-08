@@ -6,7 +6,7 @@
     background-image: linear-gradient(
       #a997df2d,
       #a997df2d
-    ),url("homeHero.png");
+    ),url("/homeHero.png");
     background-position: center;
 	background-size: cover;
 }

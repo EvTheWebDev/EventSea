@@ -1,4 +1,5 @@
 <script>
+  
   import { onMount } from "svelte";
   import { messageStore } from "../store/message.js";
   import { page } from "$app/stores";
@@ -30,7 +31,12 @@
   });
 </script>
 
+<svelte:head>
+  <link rel="icon" href="/favicon.ico" />
+  </svelte:head>
+
 <div class="app-shell" class:admin-layout={isAdminRoute}>
+  
   
   {#if !isAdminRoute}
     <Nav />
