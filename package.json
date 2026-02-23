@@ -10,7 +10,9 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"db:seed": "node manageUsers.js seed",
+		"db:clear": "node manageUsers.js clear"
 	},
 	"devDependencies": {
 		"@iconify/svelte": "^5.1.0",
@@ -33,6 +35,7 @@
 	"homepage": "https://github.com/EvTheWebDev/EventSea#readme",
 	"dependencies": {
 		"firebase": "^12.6.0",
+		"firebase-admin": "^13.6.1",
 		"iconify-icon": "^3.0.2"
 	}
 }

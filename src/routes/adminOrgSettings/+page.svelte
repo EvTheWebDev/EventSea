@@ -49,7 +49,7 @@
     await loadOrgData();
   });
 
-  async function loadOrgData() {
+async function loadOrgData() {
     try {
       loading = true;
       const docRef = doc(db, "orgs", orgId);
@@ -60,9 +60,27 @@
         orgName = data.orgName;
         orgEmail = data.email;
         orgImage = data.image;
-        adminList = data.adminUids || [data.adminUid]; // Handle array or single string legacy
         
-        // Init edit values
+        // 1. Get the raw list of IDs
+        const rawAdminIds = data.adminUids || [data.adminUid] || [];
+        
+        // 2. Resolve those IDs into full user objects
+        adminList = await Promise.all(
+          rawAdminIds.map(async (uid) => {
+            const userRef = doc(db, "users", uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const uData = userSnap.data();
+              return {
+                uid: uid,
+                name: uData.name || uData.displayName || "Unknown User",
+                email: uData.email || "No Email"
+              };
+            }
+            return { uid, name: "Deleted User", email: "N/A" };
+          })
+        );
+
         editedName = orgName;
       } else {
         errorMsg = "Organization not found.";
@@ -118,13 +136,12 @@
     }
   }
 
-  async function handleAddAdmin() {
+ async function handleAddAdmin() {
     if (!newAdminEmail) return;
     errorMsg = "";
     successMsg = "";
 
     try {
-        // 1. Find the user by email
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", newAdminEmail));
         const querySnapshot = await getDocs(q);
@@ -136,32 +153,30 @@
 
         let foundUserDoc = querySnapshot.docs[0];
         let foundUid = foundUserDoc.id;
+        let foundUserData = foundUserDoc.data(); // Get data for the UI
 
-        // 2. Update the USER document (Give them the key)
+        // ... existing Firebase update logic for users and orgs ...
         const userRef = doc(db, "users", foundUid);
-        await updateDoc(userRef, {
-            managedOrgIDs: arrayUnion(orgId), // Add this org to their list
-            isOrgAdmin: true
-        });
+        await updateDoc(userRef, { managedOrgIDs: arrayUnion(orgId), isOrgAdmin: true });
 
-        // 3. Update the ORG document (Keep a record of them)
         const orgRef = doc(db, "orgs", orgId);
-        await updateDoc(orgRef, {
-            adminUids: arrayUnion(foundUid)
-        });
+        await updateDoc(orgRef, { adminUids: arrayUnion(foundUid) });
 
         successMsg = `Added ${newAdminEmail} as an admin!`;
-        newAdminEmail = ""; // Clear input
         
-        // Refresh local list (optional, simple push for UI)
-        adminList = [...adminList, foundUid];
-
+        // Update local state with an OBJECT instead of a string
+        adminList = [...adminList, { 
+          uid: foundUid, 
+          name: foundUserData.name || "New Admin", 
+          email: newAdminEmail 
+        }];
+        
+        newAdminEmail = ""; 
     } catch (err) {
         console.error(err);
         errorMsg = "Error adding admin.";
     }
   }
-
   function cancelEdit() {
     editedName = orgName;
     editMode = false;
@@ -267,12 +282,16 @@
         </div>
 
         <div class="admin-list">
-            <h3>Current Admin IDs:</h3>
+            <h3>Current Admins:</h3>
             <ul>
-                {#each adminList as adminUid}
-                    <li>{adminUid}</li>
-                {/each}
-            </ul>
+        {#each adminList as admin}
+            <li class="admin-card">
+                <div class="admin-details">
+                    <span class="admin-email">{admin.email}</span>
+                </div>
+            </li>
+        {/each}
+    </ul>
         </div>
       </div>
 

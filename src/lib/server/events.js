@@ -97,3 +97,36 @@ export async function getEventsByIds(eventIds) {
   const results = await Promise.all(eventPromises);
   return results.filter(e => e !== null);
 }
+
+/**
+ * Takes an array of UIDs and returns an array of user objects (name, email, etc.)
+ * @param {string[]} uids 
+ */
+export async function getAdminDetails(uids) {
+    if (!uids || uids.length === 0) return [];
+
+    const userPromises = uids.map(async (uid) => {
+        try {
+            const userRef = doc(db, 'users', uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                return {
+                    uid: userSnap.id,
+                    name: userData.name || userData.displayName || 'Unknown Admin',
+                    email: userData.email || 'No Email Provided',
+                    pfp: userData.pfp || userData.photoURL || ''
+                };
+            }
+            return null;
+        } catch (err) {
+            console.error(`Error fetching user ${uid}:`, err);
+            return null;
+        }
+    });
+
+    const results = await Promise.all(userPromises);
+    // Filter out any nulls (users that didn't exist in the database)
+    return results.filter(user => user !== null);
+}

@@ -144,8 +144,6 @@
             const followers = orgSnap.exists() ? (orgSnap.data().followers || 0) : 0;
             const rsvps = orgSnap.exists() ? (orgSnap.data().rsvps || 0) : 0;
 
-            // B. Fetch Events
-            // CRITICAL: Ensure your Firestore document has a field named exactly "orgId"
             const eventsRef = collection(db, "events");
             const q = query(eventsRef, where("ORG_ID", "==", id)); 
             
@@ -153,15 +151,12 @@
             
             const fetchedEvents = [];
             querySnapshot.forEach((doc) => {
-                // We spread the data and ensure the ID is included
                 fetchedEvents.push({ id: doc.id, ...doc.data() });
             });
 
-            // DEBUG LOG: Check your console to see what we actually found
-            console.log(`Query found ${fetchedEvents.length} events for Org ID: ${id}`);
-            if(fetchedEvents.length > 0) console.log("First event sample:", fetchedEvents[0]);
+            // console.log(`Query found ${fetchedEvents.length} events for Org ID: ${id}`);
+            // if(fetchedEvents.length > 0) console.log("First event sample:", fetchedEvents[0]);
 
-            // C. Update the Store
             adminOrgData.set({
                 isLoaded: true,
                 orgId: id,
