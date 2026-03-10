@@ -1,11 +1,12 @@
 <script>
   import "./nav.css";
+  import { showAuthModal, authRedirect } from "../../store/authModal.js";
+  import { goto } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
   import { messageStore, showMessage } from "../../store/message.js";
   import { signUp, logIn, getProfilePicture } from "../firebase.js";
 
-  let showAuthModal = false;
   let authMode = "login"; // 'login' | 'signup'
   let showWarningBar = false;
   let warningText = "You must be signed in to perform this action!";
@@ -24,7 +25,7 @@
   function openAuth(mode = "login") {
     authMode = mode;
     error = "";
-    showAuthModal = true;
+    $showAuthModal = true;
   }
 
   async function submitAuth() {
@@ -37,12 +38,20 @@
         await signUp(email, password, firstName, lastName);
         showMessage("You have successfully signed up!");
       }
-      // firebase auth listener will update the store; close auth modal
-      showAuthModal = false;
+      
+      // Close modal and clear form
+      $showAuthModal = false;
       email = "";
       firstName = "";
       lastName = "";
       password = "";
+
+      // Redirect if a destination was set (e.g., from the footer)
+      if ($authRedirect) {
+        goto($authRedirect);
+        $authRedirect = null; // Reset it so standard logins aren't affected later
+      }
+
     } catch (err) {
       const e = /** @type {any} */ (err);
       error = e?.message || String(e);
@@ -50,7 +59,8 @@
   }
 
   function closeAuth() {
-    showAuthModal = false;
+    $showAuthModal = false;
+    $authRedirect = null; // Clear any pending redirects if they cancel
     error = "";
   }
 
@@ -78,8 +88,8 @@
   }
 
   // Auto-close auth modal when user becomes authenticated
-  $: if ($authStore.user && showAuthModal) {
-    showAuthModal = false;
+  $: if ($authStore.user && $showAuthModal) {
+    $showAuthModal = false;
     error = "";
     email = "";
     password = "";
@@ -109,9 +119,9 @@
 </script>
 
 <nav>
-  <div class="logo">EventSea</div>
+  <a href="/" class="logoLink"><div class="logo">EventSea</div></a>
   <div class="links">
-    <li class="menuItem"><a href="/">Home</a></li>
+    <!-- <li class="menuItem"><a href="/">Home</a></li> -->
     <li class="menuItem">
       <a href="/events">
         Events<Icon
@@ -186,7 +196,7 @@
   </div>
 {/if}
 
-{#if showAuthModal}
+{#if $showAuthModal}
   <div class="auth-modal" role="dialog" aria-modal="true">
     <div class="auth-panel">
       <button class="close" on:click={closeAuth} aria-label="Close">×</button>

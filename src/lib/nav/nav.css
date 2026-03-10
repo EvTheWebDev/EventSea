@@ -19,6 +19,11 @@ nav .logo {
     font-size: 28px;
 }
 
+nav .logoLink {
+    text-decoration: none;
+    color: white;
+}
+
 nav .links {
     max-width: 35%;
     min-width: 500px;
