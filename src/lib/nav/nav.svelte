@@ -143,11 +143,6 @@
             >My Organizations</a
           >
         </li>
-        <li>
-          <a href="/userAnnouncements" on:click={protectClick}
-            >My Announcements</a
-          >
-        </li>
         <li><a href="/organizations">All Organizations</a></li>
       </ul>
     </li>
