@@ -121,7 +121,7 @@
 <nav>
   <a href="/" class="logoLink"><div class="logo">EventSea</div></a>
   <div class="links">
-    <!-- <li class="menuItem"><a href="/">Home</a></li> -->
+    <li class="menuItem"><a href="/">Home</a></li>
     <li class="menuItem">
       <a href="/events">
         Events<Icon
