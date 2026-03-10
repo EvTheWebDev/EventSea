@@ -74,11 +74,13 @@
     font-weight: bold;
     cursor: pointer;
     margin-top: 20px;
-    transition: background 0.2s;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
   }
 
   .submit-btn:hover {
-    background-color: #248a75;
+    background-color: #39b9a0;
+    transform: scale(1.03);
+    filter: brightness(1.08);
   }
 
   .submit-btn:disabled {

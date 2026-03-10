@@ -18,6 +18,15 @@ footer a {
     color: white;
     font-size: 20px;
     font-family: 'Gill-Bold';
+    display: inline-block;
+    transition: transform 160ms ease, filter 160ms ease, color 160ms ease;
+}
+
+footer a:hover,
+footer a:focus-visible {
+    transform: scale(1.03);
+    filter: brightness(1.1);
+    color: #f3f0ff;
 }
 
 footer p {

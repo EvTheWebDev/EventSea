@@ -70,6 +70,14 @@ textarea {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
+}
+
+.submit-btn:hover,
+.submit-btn:focus-visible {
+  transform: scale(1.03);
+  filter: brightness(1.08);
+  background-color: #39b9a0;
 }
 .cancel-btn {
   flex: 1;
@@ -79,6 +87,15 @@ textarea {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.cancel-btn:hover,
+.cancel-btn:focus-visible {
+  transform: scale(1.03);
+  filter: brightness(1.08);
+  background-color: #f5f5f5;
+  border-color: #9f9f9f;
 }
 
 @media (max-width: 900px) {

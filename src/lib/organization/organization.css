@@ -61,10 +61,27 @@ color: #1b065e8e;
     border-radius: 15px;
     background-color: white;
     border: 3px solid #1B065E;
+    cursor: pointer;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.orgButtons button:hover,
+.orgButtons button:focus-visible {
+    transform: scale(1.03);
+    filter: brightness(1.08);
+    background-color: #2d1680;
+    color: white;
+    border-color: #2d1680;
 }
 
 .orgButtons button a {
     font-family: 'Mont-Semi';
     text-decoration: none;
     color: #1B065E;
+    transition: color 160ms ease;
+}
+
+.orgButtons button:hover a,
+.orgButtons button:focus-visible a {
+    color: white;
 }

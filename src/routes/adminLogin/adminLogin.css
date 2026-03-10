@@ -111,12 +111,14 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, border-color 160ms ease;
   border: 1px solid transparent;
 }
 .org-item:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   border-color: #2ca58d;
+  transform: scale(1.03);
+  filter: brightness(1.08);
 }
 .org-item h3 {
   margin: 0;
