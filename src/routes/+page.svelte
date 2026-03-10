@@ -83,7 +83,7 @@
   <div class="category">
     <h2 class="heading">Browse by Category</h2>
     <div class="categories">
-      <a href="/events?category=academic" class="categoryCard">
+      <a href="/category" class="categoryCard">
         <Icon
           icon="solar:square-academic-cap-bold"
           width="45"

@@ -67,33 +67,33 @@
 
 <script>
   import "../../global.css";
-  import "./events.css";
+  import "./category.css";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import EventCard from "$lib/eventCard/eventCard.svelte";
   import { fetchEvents } from "$lib/firebase";
 
-  // let events = [];
-  // let loading = true;
+  let events = [];
+  let loading = true;
 
-  // onMount(async () => {
-  //   try {
-  //     // Fetch all events
-  //     events = await fetchEvents({ mode: "all" });
-  //   } catch (err) {
-  //     console.error("Failed to load events:", err);
-  //   } finally {
-  //     loading = false;
-  //   }
-  // });
+  onMount(async () => {
+    try {
+      // Fetch all events
+      events = await fetchEvents({ mode: "all" });
+    } catch (err) {
+      console.error("Failed to load events:", err);
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
-<main class="eventsPage">
+<main class="categoryPage">
   <div class="nav"></div>
-  <div class="eventsHero">
-    <div class="eventsText">
-      <h2>Your adventure starts here.</h2>
-      <h1>Upcoming Events</h1>
+  <div class="categoryHero">
+    <div class="categoryText">
+      <h2>Find the best fit for you.</h2>
+      <h1>_ Events</h1>
     </div>
   </div>
 
@@ -114,7 +114,7 @@
     </div> -->
 
     <div class="eventCards">
-      <!-- {#if loading}
+      {#if loading}
         <div class="status">Loading events...</div>
       {:else if events.length > 0}
         <div class="events-grid">
@@ -124,7 +124,7 @@
         </div>
       {:else}
         <div class="status">No upcoming events found.</div>
-      {/if} -->
+      {/if}
     </div>
   </div>
 </main>

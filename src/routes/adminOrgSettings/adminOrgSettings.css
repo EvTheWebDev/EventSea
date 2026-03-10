@@ -62,11 +62,13 @@
   border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
-  transition: background 120ms ease;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
 }
 
 .upload-button:hover {
-  background: #0f0446;
+  background: #2d1680;
+  transform: scale(1.03);
+  filter: brightness(1.1);
 }
 
 .upload-label input:disabled ~ .upload-button {
@@ -130,11 +132,13 @@
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 120ms ease;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
 }
 
 .sign-out-button:hover {
-  background-color: #7c0000;
+  background-color: #bf1f1f;
+  transform: scale(1.03);
+  filter: brightness(1.08);
 }
 
 .sign-out-button:active {
@@ -228,11 +232,13 @@ label {
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
   }
 
   .save-btn:hover {
-    background-color: #248a75;
+    background-color: #39b9a0;
+    transform: scale(1.03);
+    filter: brightness(1.08);
   }
 
   .save-btn:disabled {

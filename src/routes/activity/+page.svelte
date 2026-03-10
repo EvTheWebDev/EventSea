@@ -67,37 +67,23 @@
 
 <script>
   import "../../global.css";
-  import "./events.css";
+  import "./activity.css";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import EventCard from "$lib/eventCard/eventCard.svelte";
   import { fetchEvents } from "$lib/firebase";
-
-  // let events = [];
-  // let loading = true;
-
-  // onMount(async () => {
-  //   try {
-  //     // Fetch all events
-  //     events = await fetchEvents({ mode: "all" });
-  //   } catch (err) {
-  //     console.error("Failed to load events:", err);
-  //   } finally {
-  //     loading = false;
-  //   }
-  // });
 </script>
 
-<main class="eventsPage">
+<main class="activityPage">
   <div class="nav"></div>
-  <div class="eventsHero">
-    <div class="eventsText">
-      <h2>Your adventure starts here.</h2>
-      <h1>Upcoming Events</h1>
+  <div class="activityHero">
+    <div class="activityText">
+      <h2>See what's new on campus.</h2>
+      <h1>Activity Wall</h1>
     </div>
   </div>
 
-  <div class="eventsContainer">
+  <div class="postContainer">
     <!-- <div class="filters">
       <div class="search">
         <Icon icon="material-symbols:search-rounded" width="24" height="24" style="color: #1b065e;margin-right: 4px" />
@@ -112,19 +98,5 @@
         Sort
       </div>
     </div> -->
-
-    <div class="eventCards">
-      <!-- {#if loading}
-        <div class="status">Loading events...</div>
-      {:else if events.length > 0}
-        <div class="events-grid">
-          {#each events as event}
-            <EventCard {event} />
-          {/each}
-        </div>
-      {:else}
-        <div class="status">No upcoming events found.</div>
-      {/if} -->
-    </div>
   </div>
 </main>

@@ -62,12 +62,14 @@
     border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, color 160ms ease;
   }
 
   .btn-outline:hover {
-    background: #1B065E;
+    background: #2d1680;
     color: white;
+    transform: scale(1.03);
+    filter: brightness(1.08);
   }
 
   .btn-primary {
@@ -78,19 +80,24 @@
     color: white;         
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, border-color 160ms ease;
   }
 
   .btn-primary:hover {
-    background: #3a1c92; 
-    border-color: #3a1c92;
+    background: #4b2ca8;
+    border-color: #4b2ca8;
+    transform: scale(1.03);
+    filter: brightness(1.08);
   }
 
   .delete-btn {
         border-color: #d9534f;
         color: #d9534f;
+      transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, color 160ms ease;
     }
     .delete-btn:hover {
         background-color: #d9534f;
         color: white;
+      transform: scale(1.03);
+      filter: brightness(1.08);
     }
