@@ -1,6 +1,15 @@
 import { db } from '$lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
+// --- 1. THE HYBRID SMART SWITCH ---
+// Vercel gets SSR (true), Mobile gets SPA (false)
+const isMobile = import.meta.env.VITE_MOBILE_BUILD === 'true';
+export const ssr = !isMobile;
+export const trailingSlash = 'always';
+
+
+// --- 2. UNIVERSAL LOAD FUNCTION ---
+// This runs on the server for Vercel, and directly on the phone for Capacitor
 export const load = async ({ url }) => {
   // 1. CHECK: Are we on an admin page?
   if (!url.pathname.startsWith('/admin')) {
@@ -8,11 +17,8 @@ export const load = async ({ url }) => {
   }
 
   // 2. GET THE ID FROM THE URL
-  // This is the magic step. We grab ?orgId=... from the browser bar
   const orgId = url.searchParams.get('orgId');
 
-  // If no ID is in the URL (e.g. they just typed /adminHome), return null.
-  // The page component will handle redirecting them to login/select.
   if (!orgId) {
     return { userOrg: null };
   }
@@ -24,7 +30,7 @@ export const load = async ({ url }) => {
     
     // Default fallback data
     let navData = {
-      orgID: orgId, // Keep the ID so the nav links work!
+      orgID: orgId, 
       orgName: "Loading...",
       followers: 0,
       image: null, 
@@ -34,8 +40,8 @@ export const load = async ({ url }) => {
     if (orgSnap.exists()) {
       const d = orgSnap.data();
       navData = {
-        orgID: orgSnap.id, // Ensure ID is included in the object
-        orgName: d.orgName || d.name || "Unnamed Org", // Check both common field names
+        orgID: orgSnap.id, 
+        orgName: d.orgName || d.name || "Unnamed Org", 
         followers: d.followers || 0,
         image: d.image || "/blankUser.png",
         foundedYear: d.foundedYear || "2025" 

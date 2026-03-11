@@ -1,6 +1,10 @@
 import { initializeApp } from "firebase/app";
+// 1. ADD THE CAPACITOR PERSISTENCE IMPORTS
 import {
   getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -36,7 +40,16 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+
+// 2. THE SMART SWITCH FOR MOBILE PERSISTENCE
+const isMobile = import.meta.env.VITE_MOBILE_BUILD === 'true';
+
+const auth = isMobile 
+  ? initializeAuth(app, { 
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence] 
+    })
+  : getAuth(app);
+
 export const db = getFirestore(app);
 
 export { auth, app };

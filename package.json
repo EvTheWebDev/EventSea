@@ -7,6 +7,9 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"mobile-build": "VITE_MOBILE_BUILD=true vite build",
+		"mobile-sync": "npx cap sync",
+		"ios:sync": "rm -rf build && npm run build:mobile && npx cap sync",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -15,6 +18,7 @@
 		"db:clear": "node manageUsers.js clear"
 	},
 	"devDependencies": {
+		"@capacitor/cli": "^8.2.0",
 		"@iconify/svelte": "^5.1.0",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
@@ -35,6 +39,9 @@
 	},
 	"homepage": "https://github.com/EvTheWebDev/EventSea#readme",
 	"dependencies": {
+		"@capacitor/android": "^8.2.0",
+		"@capacitor/core": "^8.2.0",
+		"@capacitor/ios": "^8.2.0",
 		"firebase": "^12.6.0",
 		"firebase-admin": "^13.6.1",
 		"iconify-icon": "^3.0.2"

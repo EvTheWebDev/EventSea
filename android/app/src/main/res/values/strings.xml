@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">eventsea</string>
+    <string name="title_activity_main">eventsea</string>
+    <string name="package_name">com.eventsea.dev</string>
+    <string name="custom_url_scheme">com.eventsea.dev</string>
+</resources>
