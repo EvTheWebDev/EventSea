@@ -22,7 +22,7 @@
   async function handleLogout() {
     try {
         await logOut();
-        goto("/adminLogin");
+        goto("/");
     } catch (err) {
         console.error(err);
     }
