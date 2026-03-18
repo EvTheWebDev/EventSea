@@ -6,36 +6,74 @@
   import "../global.css";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import EventCard from "$lib/eventCard/eventCard.svelte";
   import { db, fetchEvents, fetchOrgs } from "$lib/firebase";
-  import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+  import { findBestSearchMatch } from "$lib/search";
+  import SearchNotFoundModal from "$lib/searchNotFoundModal.svelte";
+  import {
+    collection,
+    query,
+    orderBy,
+    limit,
+    getDocs,
+  } from "firebase/firestore";
 
+  /** @type {Array<Record<string, any>>} */
   let trendingEvents = [];
   let loading = true;
+  /** @type {Array<Record<string, any>>} */
   let featuredOrgs = [];
   let loadingOrgs = true;
+  let searchInput = "";
+  let searching = false;
+  let showNotFoundModal = false;
+  let notFoundMessage = "";
+
+  /** @param {SubmitEvent} event */
+  async function submitSearch(event) {
+    event.preventDefault();
+
+    const input = searchInput.trim();
+    if (!input || searching) return;
+
+    searching = true;
+
+    try {
+      const result = await findBestSearchMatch(input, { scope: "all" });
+
+      if (result.found && result.path) {
+        goto(result.path);
+        return;
+      }
+
+      notFoundMessage = `"${input}" not found. Please refine your search and try again.`;
+      showNotFoundModal = true;
+    } finally {
+      searching = false;
+    }
+  }
+
+  function closeNotFoundModal() {
+    showNotFoundModal = false;
+  }
 
   onMount(async () => {
     try {
       const eventsRef = collection(db, "events");
-      
+
       // 3. Query: Get the 3 newest events
       // (You can change '3' to however many cards you want to show)
-      const q = query(
-        eventsRef, 
-        orderBy("createdAt", "desc"), 
-        limit(3)
-      );
-      
+      const q = query(eventsRef, orderBy("createdAt", "desc"), limit(3));
+
       const snapshot = await getDocs(q);
-      
-      trendingEvents = snapshot.docs.map(doc => {
+
+      trendingEvents = snapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
       });
 
-      featuredOrgs = await fetchOrgs({ mode: 'featured', limitCount: 4 });
+      featuredOrgs = await fetchOrgs({ mode: "featured", limitCount: 4 });
       loadingOrgs = false;
-
     } catch (err) {
       console.error("Error loading trending events:", err);
     } finally {
@@ -50,12 +88,30 @@
       <h2>Discover. Explore.</h2>
       <h1>Set Sail.</h1>
       <p>An event hub for students, by students.</p>
-      <input
-        type="search"
-        name="search"
-        id="search"
-        placeholder="Find your next adventure..."
-      />
+      <form class="homeSearch" onsubmit={submitSearch}>
+        <div class="homeSearchInputWrap">
+          <input
+            type="search"
+            name="search"
+            id="search"
+            placeholder="Find your next adventure..."
+            bind:value={searchInput}
+          />
+          <button
+            type="submit"
+            class="homeSearchIconButton"
+            aria-label="Search"
+            disabled={searching}
+          >
+            <Icon
+              icon="material-symbols:search-rounded"
+              width="24"
+              height="24"
+              style="color: currentColor"
+            />
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -67,16 +123,16 @@
       <Event />
     </div> -->
     <div class="trendingEventCards">
-  {#if loading}
-    <p>Loading events...</p>
-  {:else if trendingEvents.length > 0}
-    {#each trendingEvents as event}
-      <EventCard {event} />
-    {/each}
-  {:else}
-    <p>No upcoming events found.</p>
-  {/if}
-</div>
+      {#if loading}
+        <p>Loading events...</p>
+      {:else if trendingEvents.length > 0}
+        {#each trendingEvents as event}
+          <EventCard {event} />
+        {/each}
+      {:else}
+        <p>No upcoming events found.</p>
+      {/if}
+    </div>
     <div class="more"><a id="more" href="/events">More Events</a></div>
   </div>
 
@@ -171,10 +227,9 @@
     </div>
   </div>
 
-
   <div class="organizations">
     <h2 class="heading">Featured Organizations</h2>
-    
+
     <div class="orgCards">
       {#if loadingOrgs}
         <p>Loading organizations...</p>
@@ -190,7 +245,7 @@
     <div class="more">
       <a id="more" href="/organizations">More Organizations</a>
     </div>
-</div>
+  </div>
   <!-- <div class="organizations">
     <h2 class="heading">Featured Organizations</h2>
     <div class="orgCards">
@@ -205,4 +260,10 @@
       <a id="more" href="/organizations">More Organizations</a>
     </div>
   </div> -->
+
+  <SearchNotFoundModal
+    open={showNotFoundModal}
+    message={notFoundMessage}
+    onClose={closeNotFoundModal}
+  />
 </main>
