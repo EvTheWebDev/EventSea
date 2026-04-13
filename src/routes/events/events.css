@@ -14,6 +14,11 @@
 	background-size: cover;
 }
 
+.eventsText h1,
+.eventsText h2 {
+    color: white;
+}
+
 .eventsText h2 {
     font-size: 28px;
     font-family: "Mont-Bold";

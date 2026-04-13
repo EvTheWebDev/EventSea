@@ -45,7 +45,7 @@
 
 <script>
   import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
+  import { promptLogin } from "../../store/authModal.js";
   // Import your updated component
   import Organization from "$lib/organization/organization.svelte";
   import { auth, db } from "$lib/firebase";
@@ -61,7 +61,8 @@
       if (user) {
         await fetchMyOrgs(user.uid);
       } else {
-        goto("/login");
+        loading = false;
+        promptLogin("/userOrganizations");
       }
     });
     return unsubscribe;

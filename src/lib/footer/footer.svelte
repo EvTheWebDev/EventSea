@@ -1,16 +1,14 @@
 <script>
   import "./footer.css";
   import { authStore } from "../../store/auth.js";
-  import { showAuthModal, authRedirect } from "../../store/authModal.js"; // Import authRedirect
+  import { promptLogin } from "../../store/authModal.js";
   import { goto } from "$app/navigation";
 
   function handleAdminClick(e) {
     e.preventDefault();
 
     if (!$authStore.user) {
-      // Set the redirect path, THEN open the modal
-      $authRedirect = "/adminLogin"; 
-      $showAuthModal = true;
+      promptLogin("/adminLogin");
     } else {
       goto("/adminLogin");
     }

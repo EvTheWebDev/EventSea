@@ -29,6 +29,44 @@
   let searching = false;
   let showNotFoundModal = false;
   let notFoundMessage = "";
+  /** @type {Record<string, number>} */
+  let categoryCounts = {
+    academic: 0,
+    careers: 0,
+    workshops: 0,
+    fun: 0,
+    worship: 0,
+  };
+
+  /** @param {unknown} value */
+  function normalizeCategory(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+  }
+
+  /** @param {Record<string, any>} eventData */
+  function getEventCategorySlugs(eventData) {
+    const rawCategories = [];
+
+    if (Array.isArray(eventData.categories))
+      rawCategories.push(...eventData.categories);
+    if (Array.isArray(eventData.CATEGORIES))
+      rawCategories.push(...eventData.CATEGORIES);
+    if (typeof eventData.category === "string")
+      rawCategories.push(eventData.category);
+    if (typeof eventData.CATEGORY === "string")
+      rawCategories.push(eventData.CATEGORY);
+
+    const splitValues = rawCategories
+      .flatMap((value) => String(value).split(","))
+      .map((value) => normalizeCategory(value))
+      .filter(Boolean);
+
+    return [...new Set(splitValues)];
+  }
 
   /** @param {SubmitEvent} event */
   async function submitSearch(event) {
@@ -71,6 +109,27 @@
       trendingEvents = snapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
       });
+
+      const allEvents = await fetchEvents({ mode: "all" });
+      /** @type {Record<string, number>} */
+      const nextCounts = {
+        academic: 0,
+        careers: 0,
+        workshops: 0,
+        fun: 0,
+        worship: 0,
+      };
+
+      for (const eventData of allEvents) {
+        const slugs = getEventCategorySlugs(eventData);
+        for (const slug of slugs) {
+          if (Object.hasOwn(nextCounts, slug)) {
+            nextCounts[slug] += 1;
+          }
+        }
+      }
+
+      categoryCounts = nextCounts;
 
       featuredOrgs = await fetchOrgs({ mode: "featured", limitCount: 4 });
       loadingOrgs = false;
@@ -139,7 +198,7 @@
   <div class="category">
     <h2 class="heading">Browse by Category</h2>
     <div class="categories">
-      <a href="/category" class="categoryCard">
+      <a href="/category/academic" class="categoryCard">
         <Icon
           icon="solar:square-academic-cap-bold"
           width="45"
@@ -153,10 +212,10 @@
             class="margin"
             width="18"
             height="18"
-          />18 events</span
+          />{categoryCounts.academic} events</span
         >
       </a>
-      <a href="/events?category=careers" class="categoryCard">
+      <a href="/category/careers" class="categoryCard">
         <Icon
           icon="tabler:briefcase"
           width="45"
@@ -170,10 +229,10 @@
             class="margin"
             width="18"
             height="18"
-          />18 events</span
+          />{categoryCounts.careers} events</span
         >
       </a>
-      <a href="/events?category=worksohps" class="categoryCard">
+      <a href="/category/workshops" class="categoryCard">
         <Icon
           icon="grommet-icons:workshop"
           width="45"
@@ -187,10 +246,10 @@
             class="margin"
             width="18"
             height="18"
-          />18 events</span
+          />{categoryCounts.workshops} events</span
         >
       </a>
-      <a href="/events?category=fun" class="categoryCard">
+      <a href="/category/fun" class="categoryCard">
         <Icon
           icon="lucide:party-popper"
           width="45"
@@ -204,10 +263,10 @@
             class="margin"
             width="18"
             height="18"
-          />18 events</span
+          />{categoryCounts.fun} events</span
         >
       </a>
-      <a href="/events?category=worship" class="categoryCard">
+      <a href="/category/worship" class="categoryCard">
         <Icon
           icon="fa7-solid:pray"
           width="45"
@@ -221,7 +280,7 @@
             class="margin"
             width="18"
             height="18"
-          />18 events</span
+          />{categoryCounts.worship} events</span
         >
       </a>
     </div>

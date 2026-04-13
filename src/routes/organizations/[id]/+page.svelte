@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import { goto } from "$app/navigation";
+  import { promptLogin } from "../../../store/authModal.js";
   import Icon from "@iconify/svelte";
   import EventCard from "$lib/eventCard/eventCard.svelte";
 
@@ -19,6 +19,7 @@
   let org = $state(null);
   let orgEvents = $state([]);
   let loading = $state(true);
+  let pageError = $state("");
 
   // Follower State
   let isFollowing = $state(false);
@@ -53,7 +54,7 @@
         orgEvents = await fetchEvents({ mode: "org", orgId: orgId });
       } else {
         alert("Organization not found");
-        goto("/events");
+        pageError = "Organization not found.";
       }
     } catch (err) {
       console.error("Error loading org page:", err);
@@ -63,7 +64,10 @@
   });
 
   async function toggleFollow() {
-    if (!auth.currentUser) return goto("/login");
+    if (!auth.currentUser) {
+      promptLogin();
+      return;
+    }
 
     processing = true;
     const orgRef = doc(db, "orgs", orgId);
@@ -146,6 +150,8 @@
         </div>
       {/if}
     </div>
+  {:else if pageError}
+    <div class="loading">{pageError}</div>
   {/if}
 </div>
 

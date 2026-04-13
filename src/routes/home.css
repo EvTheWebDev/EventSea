@@ -16,6 +16,12 @@
     text-align: center;
 }
 
+.homeText h1,
+.homeText h2,
+.homeText p {
+    color: white;
+}
+
 .homeText h2{
     font-size: 32px;
     font-family: 'Mont-Medium';

@@ -23,7 +23,7 @@ import {
   where,
   getDocs,
   limit,
-  orderBy
+  orderBy,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -57,7 +57,7 @@ export { auth, app };
 /**
  * Get a user's profile document from Firestore.
  * @param {string} uid
- * @returns {Promise<UserProfile|null>} 
+ * @returns {Promise<UserProfile|null>}
  */
 export async function getUserProfile(uid) {
   const ref = doc(db, "users", uid);
@@ -136,7 +136,7 @@ export async function signUp(email, password, firstName = "", lastName = "") {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
-    password
+    password,
   );
 
   try {
@@ -171,7 +171,7 @@ export async function logIn(email, password) {
   const userCredential = await signInWithEmailAndPassword(
     auth,
     email,
-    password
+    password,
   );
   return userCredential;
 }
@@ -313,13 +313,13 @@ export async function createOrganization(uid, orgName, orgEmail) {
   const batch = writeBatch(db);
 
   const newOrgRef = doc(collection(db, "orgs"));
-  
+
   const orgData = {
     orgName: orgName,
     email: orgEmail,
-    adminUid: uid, 
+    adminUid: uid,
     createdAt: serverTimestamp(),
-    image: null, 
+    image: null,
   };
 
   batch.set(newOrgRef, orgData);
@@ -327,8 +327,8 @@ export async function createOrganization(uid, orgName, orgEmail) {
   const userRef = doc(db, "users", uid);
   batch.update(userRef, {
     // This allows multiple orgs!
-    managedOrgIDs: arrayUnion(newOrgRef.id), 
-    isOrgAdmin: true, 
+    managedOrgIDs: arrayUnion(newOrgRef.id),
+    isOrgAdmin: true,
   });
 
   await batch.commit();
@@ -337,17 +337,19 @@ export async function createOrganization(uid, orgName, orgEmail) {
 
 /**
  * Checks if the current user manages organization(s).
- * @param {string} uid 
+ * @param {string} uid
  * @returns {Promise<string[]|null>} Returns an ARRAY of Org IDs, or null.
  */
 export async function checkUserAdminStatus(uid) {
   const userProfile = await getUserProfile(uid);
-  
-  if (userProfile && userProfile.managedOrgIDs && userProfile.managedOrgIDs.length > 0) {
-    return userProfile.managedOrgIDs; 
+
+  if (
+    userProfile &&
+    userProfile.managedOrgIDs &&
+    userProfile.managedOrgIDs.length > 0
+  ) {
+    return userProfile.managedOrgIDs;
   }
-  
-  
 
   return null;
 }
@@ -361,9 +363,9 @@ export async function getOrgsByIds(orgIds) {
   if (!orgIds || orgIds.length === 0) return [];
 
   const orgsRef = collection(db, "orgs");
- 
+
   const q = query(orgsRef, where(documentId(), "in", orgIds));
-  
+
   const querySnapshot = await getDocs(q);
   const orgs = [];
   querySnapshot.forEach((doc) => {
@@ -372,53 +374,112 @@ export async function getOrgsByIds(orgIds) {
   return orgs;
 }
 
+function normalizeCategoryValue(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
+
+function eventMatchesCategory(eventData, categorySlug) {
+  const normalizedTarget = normalizeCategoryValue(categorySlug);
+  if (!normalizedTarget) return false;
+
+  const candidates = [];
+
+  if (Array.isArray(eventData.categories)) {
+    candidates.push(...eventData.categories);
+  }
+  if (Array.isArray(eventData.CATEGORIES)) {
+    candidates.push(...eventData.CATEGORIES);
+  }
+
+  if (typeof eventData.category === "string") {
+    candidates.push(eventData.category);
+  }
+  if (typeof eventData.CATEGORY === "string") {
+    candidates.push(eventData.CATEGORY);
+  }
+
+  return candidates.some(
+    (value) => normalizeCategoryValue(value) === normalizedTarget,
+  );
+}
 
 /**
  * Fetches events based on filters.
  * @param {Object} options
- * @param {'trending' | 'org' | 'all'} [options.mode='all'] 
- * @param {string} [options.orgId] 
+ * @param {'trending' | 'org' | 'all' | 'myEvents' | 'category'} [options.mode='all']
+ * @param {string} [options.orgId]
  * @param {string} [options.userId]
- * @param {number} [options.limitCount] 
+ * @param {string} [options.category]
+ * @param {number} [options.limitCount]
  * @returns {Promise<Array>}
  */
-export async function fetchEvents({ mode = 'all', orgId, userId, limitCount } = {}) {
+export async function fetchEvents({
+  mode = "all",
+  orgId,
+  userId,
+  category,
+  limitCount,
+} = {}) {
   try {
     const eventsRef = collection(db, "events");
     let q;
+    let categorySlug = "";
 
     switch (mode) {
-      case 'trending':
+      case "trending":
         q = query(
-            eventsRef, 
-            orderBy("createdAt", "desc"), 
-            limit(limitCount || 3)
+          eventsRef,
+          orderBy("createdAt", "desc"),
+          limit(limitCount || 3),
         );
         break;
 
-      case 'org':
+      case "org":
         if (!orgId) throw new Error("Org ID required for org fetch");
         q = query(
-            eventsRef, 
-            where("ORG_ID", "==", orgId), 
-            orderBy("createdAt", "desc")
+          eventsRef,
+          where("ORG_ID", "==", orgId),
+          orderBy("createdAt", "desc"),
         );
         break;
 
-        case 'myEvents':
+      case "myEvents":
         if (!userId) throw new Error("User ID required");
         q = query(eventsRef, where("rsvps", "array-contains", userId));
         break;
-        
-      case 'all':
+
+      case "category":
+        if (!category) throw new Error("Category required for category fetch");
+        categorySlug = normalizeCategoryValue(category);
+        q = query(
+          eventsRef,
+          where("categories", "array-contains", categorySlug),
+          orderBy("DATE", "asc"),
+        );
+        break;
+
+      case "all":
       default:
         q = query(eventsRef, orderBy("DATE", "asc"));
         break;
     }
 
-    const snapshot = await getDocs(q);
+    let snapshot;
+    try {
+      snapshot = await getDocs(q);
+    } catch (err) {
+      if (mode !== "category") throw err;
 
-    return snapshot.docs.map(doc => {
+      // Fallback for projects with mixed category field names or missing indexes.
+      const fallbackQuery = query(eventsRef, orderBy("DATE", "asc"));
+      snapshot = await getDocs(fallbackQuery);
+    }
+
+    const mappedEvents = snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -427,6 +488,34 @@ export async function fetchEvents({ mode = 'all', orgId, userId, limitCount } = 
       };
     });
 
+    if (mode !== "category") {
+      return mappedEvents;
+    }
+
+    let filteredEvents = mappedEvents.filter((eventData) =>
+      eventMatchesCategory(eventData, categorySlug),
+    );
+
+    if (filteredEvents.length > 0 || snapshot.docs.length > 0) {
+      return filteredEvents;
+    }
+
+    // Second fallback if strict Firestore query returns nothing due legacy casing/data format.
+    const allSnapshot = await getDocs(query(eventsRef, orderBy("DATE", "asc")));
+    const allEvents = allSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt ? data.createdAt.toMillis() : null,
+      };
+    });
+
+    filteredEvents = allEvents.filter((eventData) =>
+      eventMatchesCategory(eventData, categorySlug),
+    );
+
+    return filteredEvents;
   } catch (err) {
     console.error(`Error fetching events (${mode}):`, err);
     return [];
@@ -436,28 +525,28 @@ export async function fetchEvents({ mode = 'all', orgId, userId, limitCount } = 
 /**
  * Fetches organizations based on filters.
  * @param {Object} options
- * @param {'featured' | 'all' | 'myOrgs'} [options.mode='all'] 
- * @param {string} [options.userId] 
- * @param {number} [options.limitCount] 
+ * @param {'featured' | 'all' | 'myOrgs'} [options.mode='all']
+ * @param {string} [options.userId]
+ * @param {number} [options.limitCount]
  * @returns {Promise<Array>}
  */
-export async function fetchOrgs({ mode = 'all', userId, limitCount } = {}) {
+export async function fetchOrgs({ mode = "all", userId, limitCount } = {}) {
   try {
     const orgsRef = collection(db, "orgs");
     let q;
 
     switch (mode) {
-      case 'featured':
+      case "featured":
         // Just grab the first X orgs (or sort by 'followers' if you have an index)
         q = query(orgsRef, limit(limitCount || 3));
         break;
 
-      case 'myOrgs':
+      case "myOrgs":
         if (!userId) throw new Error("User ID required");
         q = query(orgsRef, where("followers", "array-contains", userId));
         break;
-        
-      case 'all':
+
+      case "all":
       default:
         // Sort A-Z
         q = query(orgsRef, orderBy("orgName", "asc"));
@@ -466,11 +555,10 @@ export async function fetchOrgs({ mode = 'all', userId, limitCount } = {}) {
 
     const snapshot = await getDocs(q);
 
-    return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
     }));
-
   } catch (err) {
     console.error(`Error fetching orgs (${mode}):`, err);
     return [];

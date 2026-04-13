@@ -1,4 +1,6 @@
 <script>
+  import { fade } from "svelte/transition";
+
   /** @type {{ open?: boolean; message?: string; onClose?: () => void }} */
   let { open = false, message = "", onClose = () => {} } = $props();
 
@@ -24,12 +26,16 @@
     aria-label="Close search result"
     onclick={closeOnBackdrop}
     onkeydown={closeOnEscape}
+    in:fade={{ duration: 180 }}
+    out:fade={{ duration: 160 }}
     tabindex="0"
   >
     <div
       class="search-modal"
       role="alertdialog"
       aria-modal="true"
+      in:fade={{ duration: 220 }}
+      out:fade={{ duration: 180 }}
       aria-label="Search result"
     >
       <button

@@ -2,6 +2,7 @@
   import "../../global.css";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
+  import { promptLogin } from "../../store/authModal.js";
   import { showMessage } from "../../store/message.js";
   import {
     uploadProfilePicture,
@@ -16,6 +17,7 @@
   /** @type {{ user: import("firebase/auth").User | null, loading: boolean }} */
   let authStoreValue;
   authStore.subscribe((val) => (authStoreValue = val));
+  let loginPrompted = false;
 
   let firstName = "USER";
   let lastName = "";
@@ -34,6 +36,16 @@
   let saveError = "";
   let editedFirst = "";
   let editedLast = "";
+
+  $: if (
+    authStoreValue &&
+    !authStoreValue.loading &&
+    !authStoreValue.user &&
+    !loginPrompted
+  ) {
+    loginPrompted = true;
+    promptLogin("/profile");
+  }
 
   // derive first/last name preferring Firestore user doc, falling back to auth.displayName
   $: {
@@ -62,7 +74,7 @@
     if (!$authStore?.user?.uid) return;
     try {
       const url = await getProfilePicture(
-        /** @type {string} */ ($authStore.user.uid)
+        /** @type {string} */ ($authStore.user.uid),
       );
       profilePictureUrl = url;
     } catch (err) {
@@ -75,7 +87,7 @@
     try {
       /** @type {{ firstName?: string, lastName?: string } | null} */
       const data = await getUserProfile(
-        /** @type {string} */ ($authStore.user.uid)
+        /** @type {string} */ ($authStore.user.uid),
       );
       userDocFirst =
         data && typeof data.firstName === "string" ? data.firstName : null;
@@ -109,7 +121,7 @@
     try {
       const url = await uploadProfilePicture(
         /** @type {string} */ ($authStore.user.uid),
-        file
+        file,
       );
       profilePictureUrl = url;
       // refresh the page so other UI (nav avatar, etc.) updates immediately
@@ -134,7 +146,7 @@
         await changeUserProfile(
           /** @type {string} */ ($authStore.user.uid),
           editedFirst,
-          editedLast
+          editedLast,
         );
       }
 
@@ -185,7 +197,7 @@
           JSON.stringify({
             message: "You have successfully signed out!",
             type: "success",
-          })
+          }),
         );
         window.location.href = "/";
       }
