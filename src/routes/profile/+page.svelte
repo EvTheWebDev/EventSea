@@ -2,6 +2,7 @@
   import "../../global.css";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
+  import { promptLogin } from "../../store/authModal.js";
   import { showMessage } from "../../store/message.js";
   import {
     uploadProfilePicture,
@@ -20,6 +21,7 @@
   /** @type {{ user: import("firebase/auth").User | null, loading: boolean }} */
   let authStoreValue;
   authStore.subscribe((val) => (authStoreValue = val));
+  let loginPrompted = false;
 
   let firstName = "USER";
   let lastName = "";
@@ -49,6 +51,17 @@
   let tempImageUrl = null;
   let showCropper = false;
 
+  $: if (
+    authStoreValue &&
+    !authStoreValue.loading &&
+    !authStoreValue.user &&
+    !loginPrompted
+  ) {
+    loginPrompted = true;
+    promptLogin("/profile");
+  }
+
+  // derive first/last name preferring Firestore user doc, falling back to auth.displayName
   $: {
     if (userDocFirst !== null || userDocLast !== null) {
       firstName = userDocFirst || "USER";
@@ -88,6 +101,9 @@
     if (!$authStore?.user?.uid) return;
     try {
       const url = await getProfilePicture(/** @type {string} */ ($authStore.user.uid));
+      const url = await getProfilePicture(
+        /** @type {string} */ ($authStore.user.uid),
+      );
       profilePictureUrl = url;
     } catch (err) {
       profilePictureUrl = null;
@@ -106,6 +122,25 @@
 
       editedFirst = userDocFirst ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ")[0] : "");
       editedLast = userDocLast ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ").slice(1).join(" ") : "");
+      /** @type {{ firstName?: string, lastName?: string } | null} */
+      const data = await getUserProfile(
+        /** @type {string} */ ($authStore.user.uid),
+      );
+      userDocFirst =
+        data && typeof data.firstName === "string" ? data.firstName : null;
+      userDocLast =
+        data && typeof data.lastName === "string" ? data.lastName : null;
+      // initialize edited fields from doc or auth
+      editedFirst =
+        userDocFirst ??
+        ($authStore?.user?.displayName
+          ? String($authStore.user.displayName).split(" ")[0]
+          : "");
+      editedLast =
+        userDocLast ??
+        ($authStore?.user?.displayName
+          ? String($authStore.user.displayName).split(" ").slice(1).join(" ")
+          : "");
     } catch (err) {
       userDocFirst = null;
       userDocLast = null;
@@ -138,7 +173,7 @@
       const croppedFile = new File([blob], "profile.jpg", { type: "image/jpeg" });
       const url = await uploadProfilePicture(
         /** @type {string} */ ($authStore.user.uid),
-        croppedFile
+        file,
       );
       profilePictureUrl = url;
     } catch (err) {
@@ -151,8 +186,16 @@
   async function saveProfile() {
     saveError = "";
     try {
-      if ($authStore?.user && (editedFirst !== userDocFirst || editedLast !== userDocLast)) {
-        await changeUserProfile(/** @type {string} */ ($authStore.user.uid), editedFirst, editedLast);
+      // update name fields if changed
+      if (
+        $authStore?.user &&
+        (editedFirst !== userDocFirst || editedLast !== userDocLast)
+      ) {
+        await changeUserProfile(
+          /** @type {string} */ ($authStore.user.uid),
+          editedFirst,
+          editedLast,
+        );
       }
       if ($authStore?.user && editedEmail && editedEmail !== $authStore.user.email) {
         await changeUserEmail(editedEmail);

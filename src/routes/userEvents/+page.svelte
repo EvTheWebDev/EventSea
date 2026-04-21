@@ -1,8 +1,8 @@
 <script>
   import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
   import EventCard from "$lib/eventCard/eventCard.svelte";
   import { fetchEvents, auth } from "$lib/firebase";
+  import { promptLogin } from "../../store/authModal.js";
   import "../../global.css";
   import "../saved.css";
 
@@ -15,7 +15,8 @@
         myEvents = await fetchEvents({ mode: "myEvents", userId: user.uid });
         loading = false;
       } else {
-        goto("/login");
+        loading = false;
+        promptLogin("/userEvents");
       }
     });
     return unsubscribe;

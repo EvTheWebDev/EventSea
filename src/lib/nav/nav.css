@@ -38,6 +38,14 @@ nav .links a {
     color: white;
 }
 
+nav .links > .menuItem > a,
+nav .links > .menuItem > a:hover,
+nav .links > .menuItem > a:focus,
+nav .links > .menuItem:hover > a,
+nav .links > .menuItem:focus-within > a {
+    color: white;
+}
+
 /* small avatar in nav */
 .profile-link { display: inline-flex; align-items: center; gap: 8px; }
 .nav-avatar {
@@ -105,6 +113,11 @@ nav .menuItem ul li a {
     font-size: 16px;
     font-family: "Mont-Semi";
     display: block;
+}
+
+nav .menuItem ul li a:hover,
+nav .menuItem ul li a:focus {
+    color: #1B065E;
 }
 
 nav .menuItem:hover > ul,

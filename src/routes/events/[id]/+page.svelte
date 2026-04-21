@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import { promptLogin } from "../../../store/authModal.js";
   import Icon from "@iconify/svelte";
 
   import { db, auth } from "$lib/firebase";
@@ -15,6 +16,7 @@
 
   let event = $state(null);
   let loading = $state(true);
+  let pageError = $state("");
   let isRsvped = $state(false);
   let processing = $state(false);
 
@@ -43,7 +45,7 @@
         }
       } else {
         alert("Event not found");
-        goto("/events");
+        pageError = "Event not found.";
       }
     } catch (err) {
       console.error(err);
@@ -80,7 +82,10 @@
   }
 
   async function toggleRSVP() {
-    if (!auth.currentUser) return goto("/login");
+    if (!auth.currentUser) {
+      promptLogin();
+      return;
+    }
     processing = true;
     const eventRef = doc(db, "events", event.id);
 
@@ -172,6 +177,8 @@
         </button>
       </div>
     </div>
+  {:else if pageError}
+    <div class="loading">{pageError}</div>
   {/if}
 </div>
 

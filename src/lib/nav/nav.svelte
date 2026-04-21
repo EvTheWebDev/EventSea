@@ -1,6 +1,11 @@
 <script>
   import "./nav.css";
-  import { showAuthModal, authRedirect } from "../../store/authModal.js";
+  import { fade } from "svelte/transition";
+  import {
+    showAuthModal,
+    authRedirect,
+    promptLogin,
+  } from "../../store/authModal.js";
   import { goto } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
@@ -8,10 +13,6 @@
   import { signUp, logIn, getProfilePicture } from "../firebase.js";
 
   let authMode = "login"; // 'login' | 'signup'
-  let showWarningBar = false;
-  let warningText = "You must be signed in to perform this action!";
-  /** @type {ReturnType<typeof setTimeout> | undefined} */
-  let warningTimer;
 
   let email = "";
   let password = "";
@@ -38,7 +39,7 @@
         await signUp(email, password, firstName, lastName);
         showMessage("You have successfully signed up!");
       }
-      
+
       // Close modal and clear form
       $showAuthModal = false;
       email = "";
@@ -51,7 +52,6 @@
         goto($authRedirect);
         $authRedirect = null; // Reset it so standard logins aren't affected later
       }
-
     } catch (err) {
       const e = /** @type {any} */ (err);
       error = e?.message || String(e);
@@ -69,22 +69,10 @@
   function protectClick(e) {
     if (!$authStore.user) {
       e.preventDefault();
-      showWarningBar = true;
-      // clear any previous timer
-      if (warningTimer) clearTimeout(/** @type {any} */ (warningTimer));
-      warningTimer = /** @type {ReturnType<typeof setTimeout>} */ (
-        setTimeout(() => {
-          showWarningBar = false;
-          warningTimer = undefined;
-        }, 3000)
-      );
+      const anchor = /** @type {HTMLAnchorElement | null} */ (e.currentTarget);
+      const redirectPath = anchor?.getAttribute("href") || null;
+      promptLogin(redirectPath);
     }
-  }
-
-  function closeWarning() {
-    if (warningTimer) clearTimeout(/** @type {any} */ (warningTimer));
-    warningTimer = undefined;
-    showWarningBar = false;
   }
 
   // Auto-close auth modal when user becomes authenticated
@@ -175,25 +163,19 @@
   </div>
 </nav>
 
-{#if showWarningBar}
-  <div class="warning-modal-overlay" aria-hidden={!showWarningBar}>
-    <div
-      class="warning-modal"
-      role="alertdialog"
-      aria-modal="true"
-      aria-label="Sign-in required"
-    >
-      <button class="warning-close" on:click={closeWarning} aria-label="Close"
-        >×</button
-      >
-      <div class="warning-content">{warningText}</div>
-    </div>
-  </div>
-{/if}
-
 {#if $showAuthModal}
-  <div class="auth-modal" role="dialog" aria-modal="true">
-    <div class="auth-panel">
+  <div
+    class="auth-modal"
+    role="dialog"
+    aria-modal="true"
+    in:fade={{ duration: 180 }}
+    out:fade={{ duration: 160 }}
+  >
+    <div
+      class="auth-panel"
+      in:fade={{ duration: 220 }}
+      out:fade={{ duration: 180 }}
+    >
       <button class="close" on:click={closeAuth} aria-label="Close">×</button>
       <div class="auth-switch">
         <button
@@ -237,11 +219,18 @@
 {/if}
 
 {#if $messageStore}
-  <div class="success-modal-overlay" aria-hidden={!$messageStore}>
+  <div
+    class="success-modal-overlay"
+    aria-hidden={!$messageStore}
+    in:fade={{ duration: 180 }}
+    out:fade={{ duration: 160 }}
+  >
     <div
       class="success-modal"
       role="alertdialog"
       aria-modal="true"
+      in:fade={{ duration: 220 }}
+      out:fade={{ duration: 180 }}
       aria-label="Success message"
     >
       <button

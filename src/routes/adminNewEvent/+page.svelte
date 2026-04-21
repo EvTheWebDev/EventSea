@@ -180,21 +180,21 @@
 
 </div> -->
 
-
 <script>
-  import { goto } from "$app/navigation";
-  import EventForm from "$lib/eventForm/eventForm.svelte"; 
-  import { db } from "../../lib/firebase"; 
+  import EventForm from "$lib/eventForm/eventForm.svelte";
+  import { db } from "../../lib/firebase";
   import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-  import './adminNewEvent.css';
+  import "./adminNewEvent.css";
 
   let { data } = $props();
   // We default to an empty object to prevent "cannot read property of undefined"
-  let orgData = $derived(data.userOrg || {
+  let orgData = $derived(
+    data.userOrg || {
       orgName: "",
       name: "",
-      orgID: ""
-  });
+      orgID: "",
+    },
+  );
   let orgId = $derived(data.userOrg?.orgID || "");
   let saving = $state(false);
 
@@ -210,19 +210,17 @@
       const safeImg = finalImage || "/placeholder.jpg";
       const newEvent = {
         ...formData,
-        IMAGE_URL: safeImg, 
+        IMAGE_URL: safeImg,
         ORG_ID: orgId,
-        
+
         // Use the safe variable here
         orgName: safeOrgName,
-        
-        createdAt: serverTimestamp()
+
+        createdAt: serverTimestamp(),
       };
 
       await addDoc(collection(db, "events"), newEvent);
       alert("Event Created!");
-      window.location.href = `/adminHome?orgId=${orgId}`;
-      
     } catch (err) {
       console.error(err);
       alert("Error: " + err.message);
@@ -232,8 +230,8 @@
   }
 </script>
 
-<EventForm 
-    orgName={orgData.orgName || orgData.name || "My Organization"} 
-    saving={saving}
-    on:save={handleSave} 
+<EventForm
+  orgName={orgData.orgName || orgData.name || "My Organization"}
+  {saving}
+  on:save={handleSave}
 />

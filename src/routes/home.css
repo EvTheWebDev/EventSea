@@ -16,6 +16,12 @@
     text-align: center;
 }
 
+.homeText h1,
+.homeText h2,
+.homeText p {
+    color: white;
+}
+
 .homeText h2{
     font-size: 32px;
     font-family: 'Mont-Medium';
@@ -31,17 +37,60 @@
     font-family: 'Mont-Reg';
 }
 
-.homeText input {
-    width: 600px;
+.homeSearch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.homeSearchInputWrap {
+    width: min(600px, 88vw);
     height: 50px;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    padding: 0 8px 0 15px;
+}
+
+.homeText input {
+    width: 100%;
+    height: 100%;
     font-size: 20px;
     border: none;
     outline: none;
-    padding-left: 15px;
-    margin-top: 40px;
-    border-radius: 15px;
+    margin-top: 0;
     color: #1b065eba;
     font-family: 'Mont-Reg';
+    background: transparent;
+}
+
+.homeSearchIconButton {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #1b065e;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.homeSearchIconButton:hover,
+.homeSearchIconButton:focus-visible {
+    transform: scale(1.03);
+    filter: brightness(1.08);
+    background-color: #2d1680;
+    color: white;
+}
+
+.homeSearchIconButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
@@ -192,4 +241,9 @@ input[type="search"]::-webkit-search-cancel-button {
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
+}
+@media (max-width: 900px) {
+    .homeSearchInputWrap {
+        width: min(600px, 88vw);
+    }
 }
