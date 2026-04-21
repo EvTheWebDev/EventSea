@@ -4,37 +4,48 @@
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import EventCard from "$lib/eventCard/eventCard.svelte";
-  import { db, fetchEvents, fetchOrgs } from "$lib/firebase";
+  
+  import { authStore } from "../store/auth.js";
+  import { db, fetchEvents, fetchOrgs, getUserProfile } from "$lib/firebase";
   import { findBestSearchMatch } from "$lib/search";
-  import SearchNotFoundModal from "$lib/searchNotFoundModal.svelte";
-  import {
-    collection,
-    query,
-    orderBy,
-    limit,
-    getDocs,
-  } from "firebase/firestore";
+  import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 
+  import EventCard from "$lib/eventCard/eventCard.svelte";
+  import SearchNotFoundModal from "$lib/searchNotFoundModal.svelte";
+  import { Org } from "$lib";
+  import PostCard from "$lib/postCard/postCard.svelte";
+
+  // 1. UPGRADED TO SVELTE 5 STATE (Reactivity for UI and Likes)
   /** @type {Array<Record<string, any>>} */
-  let trendingEvents = [];
-  let loading = true;
+  let trendingEvents = $state([]);
+  let loading = $state(true);
+  
   /** @type {Array<Record<string, any>>} */
-  let featuredOrgs = [];
-  let loadingOrgs = true;
-  let searchInput = "";
-  let searching = false;
-  let showNotFoundModal = false;
-  let notFoundMessage = "";
+  let featuredOrgs = $state([]);
+  let loadingOrgs = $state(true);
+  
+  let searchInput = $state("");
+  let searching = $state(false);
+  let showNotFoundModal = $state(false);
+  let notFoundMessage = $state("");
+  
   /** @type {Record<string, number>} */
-  let categoryCounts = {
+  let categoryCounts = $state({
     academic: 0,
     careers: 0,
     workshops: 0,
     fun: 0,
     worship: 0,
-  };
+  });
 
+  /** @type {any[]} */
+  let globalPosts = $state([]);
+  let loadingPosts = $state(true);
+  
+  /** @type {any} */
+  let userProfile = $state(null);
+
+  // --- SEARCH LOGIC ---
   /** @param {unknown} value */
   function normalizeCategory(value) {
     return String(value || "")
@@ -48,14 +59,10 @@
   function getEventCategorySlugs(eventData) {
     const rawCategories = [];
 
-    if (Array.isArray(eventData.categories))
-      rawCategories.push(...eventData.categories);
-    if (Array.isArray(eventData.CATEGORIES))
-      rawCategories.push(...eventData.CATEGORIES);
-    if (typeof eventData.category === "string")
-      rawCategories.push(eventData.category);
-    if (typeof eventData.CATEGORY === "string")
-      rawCategories.push(eventData.CATEGORY);
+    if (Array.isArray(eventData.categories)) rawCategories.push(...eventData.categories);
+    if (Array.isArray(eventData.CATEGORIES)) rawCategories.push(...eventData.CATEGORIES);
+    if (typeof eventData.category === "string") rawCategories.push(eventData.category);
+    if (typeof eventData.CATEGORY === "string") rawCategories.push(eventData.CATEGORY);
 
     const splitValues = rawCategories
       .flatMap((value) => String(value).split(","))
@@ -93,24 +100,12 @@
     showNotFoundModal = false;
   }
 
-  /** @type {any[]} */
-  let globalPosts = [];
-  /** @type {any[]} */
-  let sortedPosts = [];
-  let loadingPosts = true;
-  
-  /** @type {any} */
-  let userProfile = null;
-
+  // --- DATA FETCHING ---
   onMount(async () => {
-    // FETCH EVENTS
+    // 1. FETCH EVENTS & CATEGORY COUNTS
     try {
       const eventsRef = collection(db, "events");
-
-      // 3. Query: Get the 3 newest events
-      // (You can change '3' to however many cards you want to show)
       const q = query(eventsRef, orderBy("createdAt", "desc"), limit(3));
-
       const snapshot = await getDocs(q);
 
       trendingEvents = snapshot.docs.map((doc) => {
@@ -137,16 +132,13 @@
       }
 
       categoryCounts = nextCounts;
-
-      featuredOrgs = await fetchOrgs({ mode: "featured", limitCount: 4 });
-      loadingOrgs = false;
     } catch (err) {
       console.error("Error loading events:", err);
     } finally {
       loading = false;
     }
 
-    // FETCH ORGS
+    // 2. FETCH ORGS (Removed duplicate block)
     try {
       featuredOrgs = await fetchOrgs({ mode: 'featured', limitCount: 4 });
     } catch (err) {
@@ -155,7 +147,7 @@
       loadingOrgs = false;
     }
 
-    // FETCH POSTS 
+    // 3. FETCH POSTS 
     try {
       const postsRef = collection(db, "posts");
       const postQ = query(postsRef, orderBy("createdAt", "desc"), limit(6));
@@ -168,27 +160,26 @@
     }
   });
 
-  // 2. REACTIVE SORTER
-  $: {
+  // --- AUTOMATIC USER PROFILE FETCHING ---
+  $effect(() => {
     const uid = $authStore?.user?.uid;
     if (uid && !userProfile) {
-      // Use the JSDoc string cast to satisfy the Firebase overload rule
       getUserProfile(/** @type {string} */ (uid)).then(profile => { 
         userProfile = profile; 
       });
     }
+  });
 
-    if (userProfile && userProfile.followedOrgs) {
-      sortedPosts = [...globalPosts].sort((a, b) => {
-        // Safe-check the arrays before using .includes()
-        const aFollowed = userProfile?.followedOrgs?.includes(a.orgId) ? 1 : 0;
-        const bFollowed = userProfile?.followedOrgs?.includes(b.orgId) ? 1 : 0;
-        return bFollowed - aFollowed; 
-      });
-    } else {
-      sortedPosts = globalPosts; 
-    }
-  }
+  // --- REACTIVE POST SORTER ---
+  let sortedPosts = $derived(
+    userProfile && userProfile.followedOrgs 
+      ? [...globalPosts].sort((a, b) => {
+          const aFollowed = userProfile.followedOrgs.includes(a.orgId) ? 1 : 0;
+          const bFollowed = userProfile.followedOrgs.includes(b.orgId) ? 1 : 0;
+          return bFollowed - aFollowed; 
+        })
+      : globalPosts
+  );
 </script>
 
 <main>
@@ -247,7 +238,7 @@
         <p>Loading posts...</p>
       {:else if sortedPosts.length > 0}
         {#each sortedPosts as post}
-          <PostCard {post} />
+          <PostCard {post} userProfile={userProfile} />
         {/each}
       {:else}
         <p>No announcements found.</p>
@@ -260,89 +251,29 @@
     <h2 class="heading">Browse by Category</h2>
     <div class="categories">
       <a href="/category/academic" class="categoryCard">
-        <Icon
-          icon="solar:square-academic-cap-bold"
-          width="45"
-          height="45"
-          style="color: #1b065e"
-        />
+        <Icon icon="solar:square-academic-cap-bold" width="45" height="45" style="color: #1b065e" />
         <h3>Academic</h3>
-        <span
-          ><Icon
-            icon="mdi:event-outline"
-            class="margin"
-            width="18"
-            height="18"
-          />{categoryCounts.academic} events</span
-        >
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.academic} events</span>
       </a>
       <a href="/category/careers" class="categoryCard">
-        <Icon
-          icon="tabler:briefcase"
-          width="45"
-          height="45"
-          style="color: #1b065e"
-        />
+        <Icon icon="tabler:briefcase" width="45" height="45" style="color: #1b065e" />
         <h3>Careers</h3>
-        <span
-          ><Icon
-            icon="mdi:event-outline"
-            class="margin"
-            width="18"
-            height="18"
-          />{categoryCounts.careers} events</span
-        >
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.careers} events</span>
       </a>
       <a href="/category/workshops" class="categoryCard">
-        <Icon
-          icon="grommet-icons:workshop"
-          width="45"
-          height="45"
-          style="color: #1b065e"
-        />
+        <Icon icon="grommet-icons:workshop" width="45" height="45" style="color: #1b065e" />
         <h3>Workshops</h3>
-        <span
-          ><Icon
-            icon="mdi:event-outline"
-            class="margin"
-            width="18"
-            height="18"
-          />{categoryCounts.workshops} events</span
-        >
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.workshops} events</span>
       </a>
       <a href="/category/fun" class="categoryCard">
-        <Icon
-          icon="lucide:party-popper"
-          width="45"
-          height="45"
-          style="color: #1b065e"
-        />
+        <Icon icon="lucide:party-popper" width="45" height="45" style="color: #1b065e" />
         <h3>Fun</h3>
-        <span
-          ><Icon
-            icon="mdi:event-outline"
-            class="margin"
-            width="18"
-            height="18"
-          />{categoryCounts.fun} events</span
-        >
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.fun} events</span>
       </a>
       <a href="/category/worship" class="categoryCard">
-        <Icon
-          icon="fa7-solid:pray"
-          width="45"
-          height="45"
-          style="color: #1b065e"
-        />
+        <Icon icon="fa7-solid:pray" width="45" height="45" style="color: #1b065e" />
         <h3>Worship</h3>
-        <span
-          ><Icon
-            icon="mdi:event-outline"
-            class="margin"
-            width="18"
-            height="18"
-          />{categoryCounts.worship} events</span
-        >
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.worship} events</span>
       </a>
     </div>
   </div>
@@ -366,20 +297,6 @@
       <a id="more" href="/organizations">More Organizations</a>
     </div>
   </div>
-  <!-- <div class="organizations">
-    <h2 class="heading">Featured Organizations</h2>
-    <div class="orgCards">
-      <Org />
-      <Org />
-      <Org />
-      <Org />
-      <Org />
-      <Org />
-    </div>
-    <div class="more">
-      <a id="more" href="/organizations">More Organizations</a>
-    </div>
-  </div> -->
 
   <SearchNotFoundModal
     open={showNotFoundModal}

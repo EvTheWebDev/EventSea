@@ -1,19 +1,14 @@
 <script>
   import "./nav.css";
   import { fade } from "svelte/transition";
-  import {
-    showAuthModal,
-    authRedirect,
-    promptLogin,
-  } from "../../store/authModal.js";
+  import { showAuthModal, authRedirect, promptLogin } from "../../store/authModal.js";
   import { goto } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
   import { messageStore, showMessage } from "../../store/message.js";
   import { signUp, logIn, getProfilePicture } from "../firebase.js";
 
-  let authMode = "login"; // 'login' | 'signup'
-
+  let authMode = "login";
   let email = "";
   let password = "";
   let firstName = "";
@@ -22,11 +17,37 @@
   /** @type {string | null} */
   let navAvatar = null;
 
-  // Open auth modal and choose mode
+  let isMobileMenuOpen = false;
+  // NEW: Track which dropdown is open on mobile
+  let activeDropdown = null; 
+
+  function toggleMobileMenu() {
+    isMobileMenuOpen = !isMobileMenuOpen;
+    activeDropdown = null; // Reset dropdowns when closing hamburger
+  }
+
+  // NEW: Close everything when navigating
+  function closeMobileMenu() {
+    isMobileMenuOpen = false;
+    activeDropdown = null;
+  }
+
+  // NEW: Handle mobile dropdown clicks
+  /** @param {Event} e, @param {string} menuName */
+  function handleDropdownClick(e, menuName) {
+    // Only hijack the click if we are in the mobile menu view
+    if (isMobileMenuOpen) {
+      e.preventDefault(); // Stop them from navigating to /events
+      // Toggle the dropdown (close if already open, open if closed)
+      activeDropdown = activeDropdown === menuName ? null : menuName;
+    }
+  }
+
   function openAuth(mode = "login") {
     authMode = mode;
     error = "";
     $showAuthModal = true;
+    closeMobileMenu();
   }
 
   async function submitAuth() {
@@ -40,17 +61,12 @@
         showMessage("You have successfully signed up!");
       }
 
-      // Close modal and clear form
       $showAuthModal = false;
-      email = "";
-      firstName = "";
-      lastName = "";
-      password = "";
+      email = ""; firstName = ""; lastName = ""; password = "";
 
-      // Redirect if a destination was set (e.g., from the footer)
       if ($authRedirect) {
         goto($authRedirect);
-        $authRedirect = null; // Reset it so standard logins aren't affected later
+        $authRedirect = null; 
       }
     } catch (err) {
       const e = /** @type {any} */ (err);
@@ -60,11 +76,10 @@
 
   function closeAuth() {
     $showAuthModal = false;
-    $authRedirect = null; // Clear any pending redirects if they cancel
+    $authRedirect = null; 
     error = "";
   }
 
-  // Protect certain links when user is signed out
   /** @param {Event} e */
   function protectClick(e) {
     if (!$authStore.user) {
@@ -72,30 +87,19 @@
       const anchor = /** @type {HTMLAnchorElement | null} */ (e.currentTarget);
       const redirectPath = anchor?.getAttribute("href") || null;
       promptLogin(redirectPath);
+      closeMobileMenu();
     }
   }
 
-  // Auto-close auth modal when user becomes authenticated
   $: if ($authStore.user && $showAuthModal) {
     $showAuthModal = false;
-    error = "";
-    email = "";
-    password = "";
-    firstName = "";
-    lastName = "";
+    error = ""; email = ""; password = ""; firstName = ""; lastName = "";
   }
 
-  // Load small avatar for nav when user signs in
   $: if ($authStore?.user?.uid) {
     (async () => {
       try {
-        const user = $authStore.user;
-        if (!user?.uid) {
-          navAvatar = null;
-          return;
-        }
-        const uid = /** @type {string} */ (user.uid);
-        const url = await getProfilePicture(uid);
+        const url = await getProfilePicture(/** @type {string} */ ($authStore.user.uid));
         navAvatar = url;
       } catch (e) {
         navAvatar = null;
@@ -108,56 +112,46 @@
 
 <nav>
   <a href="/" class="logoLink"><div class="logo">EventSea</div></a>
-  <div class="links">
-    <li class="menuItem"><a href="/">Home</a></li>
-    <li class="menuItem">
-      <a href="/events">
-        Events<Icon
-          icon="icon-park-outline:down"
-          width="18"
-          height="18"
-          style="color: #fff;margin-left:2px"
-        />
+  
+  <button class="hamburger" on:click={toggleMobileMenu} aria-label="Toggle menu">
+    <Icon icon={isMobileMenuOpen ? "material-symbols:close" : "material-symbols:menu"} width="36" height="36" />
+  </button>
+
+  <div class="links" class:open={isMobileMenuOpen}>
+    <li class="menuItem"><a href="/" on:click={closeMobileMenu}>Home</a></li>
+    
+    <li class="menuItem" class:open-submenu={activeDropdown === 'events'}>
+      <a href="/events" on:click={(e) => handleDropdownClick(e, 'events')}>
+        Events
+        <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
       </a>
       <ul id="menuEvents">
-        <li class="subItem">
-          <a href="/userEvents" on:click={protectClick}>My Events</a>
-        </li>
-        <li class="subItem"><a href="/events">All Events</a></li>
+        <li class="subItem"><a href="/userEvents" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Events</a></li>
+        <li class="subItem"><a href="/events" on:click={closeMobileMenu}>All Events</a></li>
       </ul>
     </li>
-    <li class="menuItem">
-      <a href="/organizations">
-        Organizations<Icon
-          icon="icon-park-outline:down"
-          width="18"
-          height="18"
-          style="color: #fff;margin-left:2px"
-        />
+
+    <li class="menuItem" class:open-submenu={activeDropdown === 'orgs'}>
+      <a href="/organizations" on:click={(e) => handleDropdownClick(e, 'orgs')}>
+        Organizations
+        <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
       </a>
       <ul id="menuOrg">
-        <li>
-          <a href="/userOrganizations" on:click={protectClick}
-            >My Organizations</a
-          >
-        </li>
-        <li><a href="/organizations">All Organizations</a></li>
+        <li><a href="/userOrganizations" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Organizations</a></li>
+        <li><a href="/organizations" on:click={closeMobileMenu}>All Organizations</a></li>
       </ul>
     </li>
+
     <li class="menuItem">
       {#if $authStore.user}
-        <a href="/profile" class="profile-link">
+        <a href="/profile" class="profile-link" on:click={closeMobileMenu}>
           My Profile
           {#if navAvatar}
             <img src={navAvatar} alt="avatar" class="nav-avatar" />
           {/if}
         </a>
       {:else}
-        <button
-          type="button"
-          class="auth-toggle"
-          on:click={() => openAuth("login")}>Log In/Sign Up</button
-        >
+        <button type="button" class="auth-toggle" on:click={() => openAuth("login")}>Log In/Sign Up</button>
       {/if}
     </li>
   </div>
@@ -180,12 +174,10 @@
       <div class="auth-switch">
         <button
           class:active={authMode === "login"}
-          on:click={() => (authMode = "login")}>Log In</button
-        >
+          on:click={() => (authMode = "login")}>Log In</button>
         <button
           class:active={authMode === "signup"}
-          on:click={() => (authMode = "signup")}>Sign Up</button
-        >
+          on:click={() => (authMode = "signup")}>Sign Up</button>
       </div>
 
       <form on:submit|preventDefault={submitAuth} class="auth-form">
@@ -211,8 +203,7 @@
           <div class="auth-error">{error}</div>
         {/if}
         <button type="submit" class="submit"
-          >{authMode === "login" ? "Log In" : "Sign Up"}</button
-        >
+          >{authMode === "login" ? "Log In" : "Sign Up"}</button>
       </form>
     </div>
   </div>
@@ -236,8 +227,7 @@
       <button
         class="success-close"
         on:click={() => messageStore.set(null)}
-        aria-label="Close">×</button
-      >
+        aria-label="Close">×</button>
       <div class="success-content">{$messageStore.message}</div>
     </div>
   </div>

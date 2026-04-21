@@ -14,7 +14,6 @@
     fetchOrgs
   } from "../../lib/firebase.js";
   
-  // THE FIX: Use the $lib alias to bypass strict path/extension errors
   import ImageCropper from "$lib/ImageCropper.svelte"; 
   import "./profile.css";
 
@@ -40,7 +39,6 @@
   let editedFirst = "";
   let editedLast = "";
 
-  // THE FIX: Explicitly type your empty arrays and variables
   /** @type {any[]} */
   let followedOrgs = [];
   /** @type {string[]} */
@@ -61,7 +59,6 @@
     promptLogin("/profile");
   }
 
-  // derive first/last name preferring Firestore user doc, falling back to auth.displayName
   $: {
     if (userDocFirst !== null || userDocLast !== null) {
       firstName = userDocFirst || "USER";
@@ -101,9 +98,6 @@
     if (!$authStore?.user?.uid) return;
     try {
       const url = await getProfilePicture(/** @type {string} */ ($authStore.user.uid));
-      const url = await getProfilePicture(
-        /** @type {string} */ ($authStore.user.uid),
-      );
       profilePictureUrl = url;
     } catch (err) {
       profilePictureUrl = null;
@@ -116,31 +110,14 @@
       /** @type {{ firstName?: string, lastName?: string, managedOrgIDs?: string[] } | null} */
       const data = await getUserProfile(/** @type {string} */ ($authStore.user.uid));
       
+      // FIXED: Removed the duplicate data fetching that was crashing the compiler
       userDocFirst = data && typeof data.firstName === "string" ? data.firstName : null;
       userDocLast = data && typeof data.lastName === "string" ? data.lastName : null;
       managedOrgIDs = data?.managedOrgIDs || [];
 
       editedFirst = userDocFirst ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ")[0] : "");
       editedLast = userDocLast ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ").slice(1).join(" ") : "");
-      /** @type {{ firstName?: string, lastName?: string } | null} */
-      const data = await getUserProfile(
-        /** @type {string} */ ($authStore.user.uid),
-      );
-      userDocFirst =
-        data && typeof data.firstName === "string" ? data.firstName : null;
-      userDocLast =
-        data && typeof data.lastName === "string" ? data.lastName : null;
-      // initialize edited fields from doc or auth
-      editedFirst =
-        userDocFirst ??
-        ($authStore?.user?.displayName
-          ? String($authStore.user.displayName).split(" ")[0]
-          : "");
-      editedLast =
-        userDocLast ??
-        ($authStore?.user?.displayName
-          ? String($authStore.user.displayName).split(" ").slice(1).join(" ")
-          : "");
+      
     } catch (err) {
       userDocFirst = null;
       userDocLast = null;
@@ -148,7 +125,6 @@
     }
   }
 
-  // THE FIX: Type the event parameter
   /** @param {Event} event */
   function handleFileSelect(event) {
     const target = /** @type {HTMLInputElement} */ (event.target);
@@ -160,7 +136,6 @@
     target.value = ""; 
   }
 
-  // THE FIX: Type the blob parameter
   /** @param {Blob} blob */
   async function handleCropSave(blob) {
     if (!$authStore?.user?.uid) return;
@@ -171,9 +146,11 @@
 
     try {
       const croppedFile = new File([blob], "profile.jpg", { type: "image/jpeg" });
+      
+      // FIXED: Passed the correct variable name (croppedFile) into the upload function
       const url = await uploadProfilePicture(
         /** @type {string} */ ($authStore.user.uid),
-        file,
+        croppedFile,
       );
       profilePictureUrl = url;
     } catch (err) {
@@ -186,7 +163,6 @@
   async function saveProfile() {
     saveError = "";
     try {
-      // update name fields if changed
       if (
         $authStore?.user &&
         (editedFirst !== userDocFirst || editedLast !== userDocLast)
@@ -307,7 +283,7 @@
       {:else if followedOrgs.length > 0}
         <div class="orgs-grid">
           {#each followedOrgs as org}
-            <a href="/organization/{org.id}" class="profile-org-card" class:admin-card={managedOrgIDs.includes(org.id)}>
+            <a href="/organizations/{org.id}" class="profile-org-card" class:admin-card={managedOrgIDs.includes(org.id)}>
               <img src={org.image || "/blankUser.png"} alt="Logo" class="profile-org-avatar" />
               <div class="profile-org-info">
                 <h3>{org.orgName || org.name || "Unnamed Org"}</h3>

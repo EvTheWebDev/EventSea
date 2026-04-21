@@ -8,6 +8,7 @@ nav {
     padding: 25px;
     color: white;
     font-family: 'Mont-Medium';
+    box-sizing: border-box; /* Ensures padding doesn't push width off screen */
 }
 
 nav li {
@@ -64,6 +65,11 @@ nav .menuItem ul li a {
     font-weight: 500;
 }
 
+/* Smooth rotation for the dropdown arrow */
+.dropdown-icon {
+    transition: transform 0.2s ease;
+}
+
 nav .links a:hover,
 nav .links a:focus,
 nav .menuItem:hover > a,
@@ -80,7 +86,8 @@ nav .menuItem {
 
 nav .menuItem ul {
     position: absolute;
-    top: calc(100% + 2px);
+    /* Touch seamlessly to prevent hover dead zones */
+    top: 100%; 
     left: 0;
     background: white;
     padding: 6px 0;
@@ -120,6 +127,7 @@ nav .menuItem ul li a:focus {
     color: #1B065E;
 }
 
+/* Desktop Hover Logic */
 nav .menuItem:hover > ul,
 nav .menuItem:focus-within > ul {
     opacity: 1;
@@ -137,6 +145,16 @@ nav button {
     font-size: 16px;
     cursor: pointer;
     transition: background 120ms ease, transform 120ms ease;
+}
+
+/* Hamburger button styling */
+.hamburger {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0;
+    cursor: pointer;
 }
 
 /* Auth modal (fullscreen) */
@@ -194,18 +212,17 @@ nav button {
 .auth-error { color: #a40000; margin-top:8px; }
 .auth-footer { margin-top:14px; font-size:14px; color:#444 }
 
-/* Thin warning bar for blocked actions */
+/* Thin warning bar */
 .warning-modal-overlay {
     position: fixed;
     inset: 0;
     display: flex;
-    align-items: flex-end; /* place modal at bottom */
+    align-items: flex-end;
     justify-content: center;
     padding-bottom: 18px;
-    /* keep page usable: don't block clicks outside modal */
     background: transparent;
     z-index: 2100;
-    pointer-events: none; /* allow interactions outside the modal */
+    pointer-events: none;
 }
 
 .warning-modal {
@@ -221,7 +238,7 @@ nav button {
     position: relative;
     text-align: left;
     font-size: 15px;
-    pointer-events: auto; /* allow clicking inside the modal */
+    pointer-events: auto;
 }
 
 .warning-modal .warning-close {
@@ -238,12 +255,7 @@ nav button {
 
 .warning-modal .warning-content { padding: 6px 10px; }
 
-@media (max-width: 420px) {
-  .warning-modal { width: calc(100% - 28px); border-radius: 8px; }
-  .warning-modal-overlay { padding-bottom: 14px; }
-}
-
-/* Success modal (same style as warning modal) */
+/* Success modal */
 .success-modal-overlay {
   position: fixed;
   inset: 0;
@@ -284,18 +296,71 @@ nav button {
   cursor: pointer;
 }
 
-.success-modal .success-content {
-  padding: 6px 10px;
+.success-modal .success-content { padding: 6px 10px; }
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 850px) {
+  .hamburger {
+      display: block;
+  }
+
+  nav .links {
+      position: absolute;
+      top: 60px; /* Slides right under the nav bar */
+      left: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: unset;
+      background: #1B065E; /* Solid background for readability */
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px 25px;
+      gap: 25px;
+      display: none; /* Hidden by default */
+      box-sizing: border-box;
+      z-index: 999;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+
+  /* When JS toggles the class, show the menu */
+  nav .links.open {
+      display: flex;
+  }
+
+  /* Restyle submenus so they appear inline rather than floating off-screen */
+  nav .menuItem ul {
+      position: static;
+      box-shadow: none;
+      background: transparent;
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+      display: none !important; /* Force hide by default on mobile */
+      padding-top: 15px;
+      padding-left: 15px;
+  }
+
+  /* Show the menu ONLY when the JS applies the open-submenu class */
+  nav .menuItem.open-submenu > ul {
+      display: block !important;
+  }
+
+  /* Rotate the arrow when open */
+  nav .menuItem.open-submenu .dropdown-icon {
+      transform: rotate(180deg);
+  }
+
+  nav .menuItem ul li a {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 18px;
+  }
+
+  nav .menuItem ul li a:hover {
+      color: white;
+  }
 }
 
 @media (max-width: 420px) {
-  .success-modal {
-    width: calc(100% - 28px);
-    border-radius: 8px;
-  }
-  .success-modal-overlay {
-    padding-bottom: 14px;
-  }
+  .warning-modal, .success-modal { width: calc(100% - 28px); border-radius: 8px; }
+  .warning-modal-overlay, .success-modal-overlay { padding-bottom: 14px; }
 }
-
-
