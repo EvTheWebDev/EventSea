@@ -10,7 +10,11 @@
     getUserProfile,
     changeUserProfile,
     logOut,
+    fetchOrgs
   } from "../../lib/firebase.js";
+  
+  // THE FIX: Use the $lib alias to bypass strict path/extension errors
+  import ImageCropper from "$lib/ImageCropper.svelte"; 
   import "./profile.css";
 
   /** @type {{ user: import("firebase/auth").User | null, loading: boolean }} */
@@ -19,7 +23,6 @@
 
   let firstName = "USER";
   let lastName = "";
-  // profile values read from Firestore (preferred)
   /** @type {string | null} */
   let userDocFirst = null;
   /** @type {string | null} */
@@ -35,7 +38,17 @@
   let editedFirst = "";
   let editedLast = "";
 
-  // derive first/last name preferring Firestore user doc, falling back to auth.displayName
+  // THE FIX: Explicitly type your empty arrays and variables
+  /** @type {any[]} */
+  let followedOrgs = [];
+  /** @type {string[]} */
+  let managedOrgIDs = [];
+  let loadingOrgs = true;
+
+  /** @type {string | null} */
+  let tempImageUrl = null;
+  let showCropper = false;
+
   $: {
     if (userDocFirst !== null || userDocLast !== null) {
       firstName = userDocFirst || "USER";
@@ -55,15 +68,26 @@
   $: if ($authStore?.user?.uid) {
     loadProfilePicture();
     loadUserProfile();
+    loadFollowedOrgs($authStore.user.uid);
     editedEmail = $authStore?.user?.email || "";
+  }
+
+  /** @param {string} uid */
+  async function loadFollowedOrgs(uid) {
+    loadingOrgs = true;
+    try {
+      followedOrgs = await fetchOrgs({ mode: 'myOrgs', userId: uid });
+    } catch (err) {
+      console.error("Failed to load organizations:", err);
+    } finally {
+      loadingOrgs = false;
+    }
   }
 
   async function loadProfilePicture() {
     if (!$authStore?.user?.uid) return;
     try {
-      const url = await getProfilePicture(
-        /** @type {string} */ ($authStore.user.uid)
-      );
+      const url = await getProfilePicture(/** @type {string} */ ($authStore.user.uid));
       profilePictureUrl = url;
     } catch (err) {
       profilePictureUrl = null;
@@ -73,51 +97,52 @@
   async function loadUserProfile() {
     if (!$authStore?.user?.uid) return;
     try {
-      /** @type {{ firstName?: string, lastName?: string } | null} */
-      const data = await getUserProfile(
-        /** @type {string} */ ($authStore.user.uid)
-      );
-      userDocFirst =
-        data && typeof data.firstName === "string" ? data.firstName : null;
-      userDocLast =
-        data && typeof data.lastName === "string" ? data.lastName : null;
-      // initialize edited fields from doc or auth
-      editedFirst =
-        userDocFirst ??
-        ($authStore?.user?.displayName
-          ? String($authStore.user.displayName).split(" ")[0]
-          : "");
-      editedLast =
-        userDocLast ??
-        ($authStore?.user?.displayName
-          ? String($authStore.user.displayName).split(" ").slice(1).join(" ")
-          : "");
+      /** @type {{ firstName?: string, lastName?: string, managedOrgIDs?: string[] } | null} */
+      const data = await getUserProfile(/** @type {string} */ ($authStore.user.uid));
+      
+      userDocFirst = data && typeof data.firstName === "string" ? data.firstName : null;
+      userDocLast = data && typeof data.lastName === "string" ? data.lastName : null;
+      managedOrgIDs = data?.managedOrgIDs || [];
+
+      editedFirst = userDocFirst ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ")[0] : "");
+      editedLast = userDocLast ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ").slice(1).join(" ") : "");
     } catch (err) {
       userDocFirst = null;
       userDocLast = null;
+      managedOrgIDs = [];
     }
   }
 
+  // THE FIX: Type the event parameter
   /** @param {Event} event */
-  async function handlePictureUpload(event) {
+  function handleFileSelect(event) {
     const target = /** @type {HTMLInputElement} */ (event.target);
     const file = target?.files?.[0];
-    if (!file || !$authStore?.user?.uid) return;
+    if (!file) return;
 
+    tempImageUrl = URL.createObjectURL(file);
+    showCropper = true;
+    target.value = ""; 
+  }
+
+  // THE FIX: Type the blob parameter
+  /** @param {Blob} blob */
+  async function handleCropSave(blob) {
+    if (!$authStore?.user?.uid) return;
+    
+    showCropper = false;
     uploading = true;
     uploadError = "";
+
     try {
+      const croppedFile = new File([blob], "profile.jpg", { type: "image/jpeg" });
       const url = await uploadProfilePicture(
         /** @type {string} */ ($authStore.user.uid),
-        file
+        croppedFile
       );
       profilePictureUrl = url;
-      // refresh the page so other UI (nav avatar, etc.) updates immediately
-      if (typeof window !== "undefined") {
-        setTimeout(() => window.location.reload(), 150);
-      }
     } catch (err) {
-      uploadError = String(err) || "Failed to upload picture";
+      uploadError = String(err) || "Failed to upload cropped picture";
     } finally {
       uploading = false;
     }
@@ -126,27 +151,13 @@
   async function saveProfile() {
     saveError = "";
     try {
-      // update name fields if changed
-      if (
-        $authStore?.user &&
-        (editedFirst !== userDocFirst || editedLast !== userDocLast)
-      ) {
-        await changeUserProfile(
-          /** @type {string} */ ($authStore.user.uid),
-          editedFirst,
-          editedLast
-        );
+      if ($authStore?.user && (editedFirst !== userDocFirst || editedLast !== userDocLast)) {
+        await changeUserProfile(/** @type {string} */ ($authStore.user.uid), editedFirst, editedLast);
       }
-
-      if (
-        $authStore?.user &&
-        editedEmail &&
-        editedEmail !== $authStore.user.email
-      ) {
+      if ($authStore?.user && editedEmail && editedEmail !== $authStore.user.email) {
         await changeUserEmail(editedEmail);
       }
       editMode = false;
-      // reload to ensure updated profile and avatar are shown across the app
       if (typeof window !== "undefined") {
         setTimeout(() => window.location.reload(), 150);
       }
@@ -158,16 +169,8 @@
 
   function cancelEdit() {
     editedEmail = $authStore?.user?.email || "";
-    editedFirst =
-      userDocFirst ??
-      ($authStore?.user?.displayName
-        ? String($authStore.user.displayName).split(" ")[0]
-        : "");
-    editedLast =
-      userDocLast ??
-      ($authStore?.user?.displayName
-        ? String($authStore.user.displayName).split(" ").slice(1).join(" ")
-        : "");
+    editedFirst = userDocFirst ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ")[0] : "");
+    editedLast = userDocLast ?? ($authStore?.user?.displayName ? String($authStore.user.displayName).split(" ").slice(1).join(" ") : "");
     saveError = "";
     editMode = false;
   }
@@ -175,17 +178,10 @@
   async function handleSignOut() {
     try {
       await logOut();
-      // Store message to display after redirect
-      if (
-        typeof window !== "undefined" &&
-        typeof sessionStorage !== "undefined"
-      ) {
+      if (typeof window !== "undefined" && typeof sessionStorage !== "undefined") {
         sessionStorage.setItem(
           "pendingMessage",
-          JSON.stringify({
-            message: "You have successfully signed out!",
-            type: "success",
-          })
+          JSON.stringify({ message: "You have successfully signed out!", type: "success" })
         );
         window.location.href = "/";
       }
@@ -211,14 +207,12 @@
           <label class="upload-label">
             <input
               type="file"
-              accept="image/*"
-              on:change={handlePictureUpload}
+              accept="image/png, image/jpeg, image/webp"
+              on:change={handleFileSelect}
               disabled={uploading}
               style="display: none;"
             />
-            <span class="upload-button"
-              >{uploading ? "Uploading..." : "Change Picture"}</span
-            >
+            <span class="upload-button">{uploading ? "Uploading..." : "Change Picture"}</span>
           </label>
         {/if}
 
@@ -230,32 +224,15 @@
       <div class="profile-info">
         <p class="profileName">
           {#if editMode}
-            <input
-              type="text"
-              class="name-input"
-              bind:value={editedFirst}
-              placeholder="First name"
-            />
-            <input
-              type="text"
-              class="name-input"
-              bind:value={editedLast}
-              placeholder="Last name"
-            />
+            <input type="text" class="name-input" bind:value={editedFirst} placeholder="First name" />
+            <input type="text" class="name-input" bind:value={editedLast} placeholder="Last name" />
           {:else}
-            {firstName}
-            {#if lastName}
-              {lastName}{/if}
+            {firstName} {#if lastName}{lastName}{/if}
           {/if}
         </p>
 
         <p class="profileEmail">
-          <Icon
-            icon="mdi:email-outline"
-            width="15"
-            height="15"
-            style="color: #0f0446"
-          />
+          <Icon icon="mdi:email-outline" width="15" height="15" style="color: #0f0446" />
           {#if editMode}
             <input type="email" bind:value={editedEmail} />
           {:else}
@@ -271,26 +248,50 @@
               <div class="error-text">{saveError}</div>
             {/if}
           {:else}
-            <button on:click={() => (editMode = true)} class="edit-button"
-              ><Icon
-                icon="mingcute:pencil-fill"
-                width="32"
-                height="32"
-                style="color: #0f0446"
-              /></button
-            >
+            <button on:click={() => (editMode = true)} class="edit-button">
+              <Icon icon="mingcute:pencil-fill" width="32" height="32" style="color: #0f0446" />
+            </button>
           {/if}
         </div>
       </div>
     </div>
+    
     <div class="profileOrgs">
       <h2>Organization Affiliations</h2>
-      <p>You are not part of any organizations yet.</p>
-      <a href="../userOrganizations">My Organizations</a>
+
+      {#if loadingOrgs}
+        <p>Loading your organizations...</p>
+      {:else if followedOrgs.length > 0}
+        <div class="orgs-grid">
+          {#each followedOrgs as org}
+            <a href="/organization/{org.id}" class="profile-org-card" class:admin-card={managedOrgIDs.includes(org.id)}>
+              <img src={org.image || "/blankUser.png"} alt="Logo" class="profile-org-avatar" />
+              <div class="profile-org-info">
+                <h3>{org.orgName || org.name || "Unnamed Org"}</h3>
+                {#if managedOrgIDs.includes(org.id)}
+                  <span class="admin-badge">Admin</span>
+                {/if}
+              </div>
+            </a>
+          {/each}
+        </div>
+      {:else}
+        <p>You are not part of any organizations yet.</p>
+      {/if}
+
+      <a href="../userOrganizations" class="view-all-link">My Organizations →</a>
     </div>
   </div>
 
   <div class="sign-out-section">
     <button on:click={handleSignOut} class="sign-out-button">Sign Out</button>
   </div>
+
+  {#if showCropper}
+    <ImageCropper 
+      imageUrl={tempImageUrl} 
+      onSave={handleCropSave} 
+      onCancel={() => showCropper = false} 
+    />
+  {/if}
 </main>

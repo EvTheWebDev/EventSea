@@ -132,17 +132,27 @@
                 {#if myOrgs.length > 0}
                     <div class="org-list">
                         {#each myOrgs as org}
-                            <div class="org-item" on:click={() => handleSelectOrg(org.id)} style="cursor: pointer; padding: 10px; border: 1px solid #ccc; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between;">
-                                <h3>{org.name}</h3>
-                                <span class="arrow">→</span>
-                            </div>
-                        {/each}
+    <div class="org-item" on:click={() => handleSelectOrg(org.id)}>
+        
+        <div class="org-item-left">
+            <img src={org.image || "/blankUser.png"} alt="Logo" class="org-list-avatar" />
+            
+            <h3>
+                {(org.orgName || org.name || "Unnamed Org").length > 15 
+                    ? (org.orgName || org.name || "Unnamed Org").slice(0, 15) + '...' 
+                    : (org.orgName || org.name || "Unnamed Org")}
+            </h3>
+        </div>
+
+        <span class="arrow">→</span>
+    </div>
+{/each}
                     </div>
                 {:else}
                     <p style="margin-bottom: 20px;">You don't manage any organizations yet.</p>
                 {/if}
                 
-                <button style="margin-top: 10px; background-color: #666;" on:click={() => auth.signOut()}>Log Out</button>
+                <!-- <button style="margin-top: 10px; background-color: #666;" on:click={() => auth.signOut()}>Log Out</button> -->
             </div>
 
             <h3 class="middleOr">OR</h3>

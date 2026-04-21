@@ -1,0 +1,41 @@
+export async function getCroppedImg(imageSrc, pixelCrop) {
+  const image = new Image();
+
+  // 1. Tell the code to wait for the image to load
+  const imageLoadPromise = new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = () => reject(new Error("Failed to load image for cropping."));
+  });
+
+  // 2. Trigger the load
+  image.src = imageSrc;
+  await imageLoadPromise;
+
+  // 3. Create a 400x400 Canvas
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const SIZE = 400;
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+
+  // 4. Fill with white (prevents transparent PNGs from turning black)
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // 5. Draw the cropped section
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    SIZE,
+    SIZE
+  );
+
+  // 6. Return as a compressed JPEG
+  return canvas.toDataURL('image/jpeg', 0.8);
+}

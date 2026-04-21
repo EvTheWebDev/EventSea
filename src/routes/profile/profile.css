@@ -13,7 +13,7 @@
 
 .profile-container {
   padding: 24px;
-  max-width: 450px;
+  max-width: 48%;
   min-height: 570px;
   border-radius: 25px;
   background-color: white;
@@ -29,8 +29,8 @@
 }
 
 .profile-picture {
-  width: 360px;
-  height: 360px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   object-fit: cover;
   margin-top: 20px;
@@ -165,8 +165,8 @@
 }
 
 .profileOrgs {
-  width: 765px;
-  height: 250px;
+  width: 48%;
+  /* height: 250px; */
  border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -193,4 +193,82 @@
   border: #1B065E 4px solid;
   padding: 15px 30px;
   border-radius: 15px;
+}
+
+
+.orgs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.profile-org-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-org-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.profile-org-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.profile-org-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+/* --- THE ADMIN MAGIC --- */
+.admin-card {
+  /* This gives it that signature EventSea admin dashboard purple tint! */
+  background: linear-gradient(135deg, rgba(205, 191, 241, 0.2), rgba(105, 79, 185, 0.1));
+  border: 1px solid rgba(105, 79, 185, 0.3);
+}
+
+.admin-card:hover {
+  background: linear-gradient(135deg, rgba(205, 191, 241, 0.3), rgba(105, 79, 185, 0.2));
+}
+
+.admin-badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #694fb9;
+  background-color: rgba(105, 79, 185, 0.15);
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-all-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: #2ca58d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
 }

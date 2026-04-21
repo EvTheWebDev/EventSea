@@ -42,8 +42,10 @@
 		"@capacitor/android": "^8.2.0",
 		"@capacitor/core": "^8.2.0",
 		"@capacitor/ios": "^8.2.0",
+		"cropperjs": "^2.1.1",
 		"firebase": "^12.6.0",
 		"firebase-admin": "^13.6.1",
-		"iconify-icon": "^3.0.2"
+		"iconify-icon": "^3.0.2",
+		"svelte-easy-crop": "^5.0.1"
 	}
 }

@@ -172,3 +172,24 @@ input[type="search"]::-webkit-search-cancel-button {
     justify-content: space-evenly;
     flex-wrap: wrap;
 }
+
+.trendingPosts {
+    text-align: center;
+    background-color: #f9f9f9; 
+    padding-bottom: 80px;
+    padding-top: 20px;
+}
+
+.trendingPosts .heading {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.postCards {
+    margin: 0 auto;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}

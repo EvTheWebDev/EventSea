@@ -16,6 +16,7 @@
   let isAdminRoute = $derived($page.url.pathname.startsWith("/admin"));
   let isAdminLogin = $derived($page.url.pathname.startsWith("/adminLogin"));
 
+  
   onMount(() => {
     if (typeof sessionStorage !== "undefined") {
       const pending = sessionStorage.getItem("pendingMessage");
@@ -57,7 +58,6 @@
       <AdminFooter />
     {/if}
   </div>
-
 </div>
 
 <style>

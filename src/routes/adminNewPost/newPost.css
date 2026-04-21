@@ -1,0 +1,208 @@
+/* Split Page Architecture */
+.split-page-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+}
+
+.form-section {
+  flex: 1;
+  padding: 40px;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.preview-section {
+  flex: 1;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.preview-sticky {
+  position: sticky;
+  top: 40px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-sticky h3 {
+  color: #555;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+.card-wrapper {
+  /* Scales the preview slightly so it looks like a prominent element */
+  transform: scale(1.05); 
+  pointer-events: none; /* Prevents clicking buttons on the preview */
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Form Styles */
+.post-form {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.author-badge {
+  background-color: #f5f5f5;
+  color: #555;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+}
+
+.post-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.post-form input[type="text"],
+.post-form input[type="file"],
+.post-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  background: #fafafa;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.post-form textarea {
+  resize: vertical !important;
+  min-height: 120px;
+}
+
+.submit-btn {
+  background-color: #2ca58d;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
+  margin-top: 10px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: scale(1.03);
+  filter: brightness(1.08);
+  background-color: #39b9a0;
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Post Card Preview Styles (Mirrors postView.css) */
+.post-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-header {
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.author-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.org-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.post-date {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.post-hero-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  background-color: #eee;
+}
+
+.empty-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-style: italic;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  border-top: 1px solid #eee;
+}
+
+.post-content {
+  padding: 25px 20px;
+}
+
+.post-content h1 {
+  margin: 0 0 15px 0;
+  color: #222;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.description {
+  color: #444;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+}
+
+.post-actions {
+  padding: 15px 20px;
+  background-color: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 15px;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #888;
+}
+
+@media (max-width: 900px) {
+  .split-page-container {
+    flex-direction: column;
+  }
+}

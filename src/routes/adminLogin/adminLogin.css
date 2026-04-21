@@ -1,8 +1,7 @@
 .adminLoginPage {
   min-height: 120%;
   padding: 20px;
-  background-image: linear-gradient(#cdbff177, #694fb967), url("adminBG.jpg");
-
+background-image: linear-gradient(#cdbff177, #694fb967), url("/adminBG.jpg");
   .logo {
     font-family: "Gill-Bold";
     font-size: 28px;
@@ -112,7 +111,18 @@
   align-items: center;
   cursor: pointer;
   transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease, border-color 160ms ease;
-  border: 1px solid transparent;
+  border: 1px solid transparent; 
+}
+.org-item-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.org-list-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 .org-item:hover {
   background: rgba(255, 255, 255, 0.9);

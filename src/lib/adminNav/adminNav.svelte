@@ -19,6 +19,8 @@
   // 2. CREATE A VARIABLE FOR THE ID (Makes the HTML cleaner)
   let currentId = $derived(safeOrg.orgID);
 
+let memberCount = $derived(Array.isArray(safeOrg.followers) ? safeOrg.followers.length : (safeOrg.followers || 0));
+
   async function handleLogout() {
     try {
         await logOut();
@@ -38,7 +40,7 @@
       <p>{safeOrg.orgName}</p>
     </div>
     <p>Org Since: {safeOrg.foundedYear}</p>
-    <p>Members: {safeOrg.followers}</p>
+    <p>{memberCount === 1 ? "1 Member" : `${memberCount} Members`}</p>
   </section>
 
   <section class="buttons">
@@ -60,8 +62,8 @@
       </li>
       <li>
        
-        <a href="/adminNewAnnouncement?orgId={currentId}"> <Icon icon="streamline:announcement-megaphone-remix" width="30" height="30" />
-          New Announcement</a>
+        <a href="/adminNewPost?orgId={currentId}"> <Icon icon="streamline:announcement-megaphone-remix" width="30" height="30" />
+          New Post</a>
       </li>
       <li>
         
@@ -72,7 +74,10 @@
         <Icon icon="solar:settings-outline" width="30" height="30" />
         <a href="/adminOrgSettings?orgId={currentId}">Org Settings</a>
       </li>
-      
+      <li>
+        <Icon icon="solar:refresh-square-outline" width="30" height="30" />
+        <a href="/adminLogin">Switch Org</a>
+      </li>
       <li class="logoutButton" onclick={handleLogout} style="cursor: pointer;">
         <Icon icon="ic:round-exit-to-app" width="30" height="30" />
         <span>Log Out</span>
