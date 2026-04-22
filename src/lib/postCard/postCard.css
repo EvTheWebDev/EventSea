@@ -1,7 +1,9 @@
- .post-card-link {
+.post-card-link {
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;          /* NEW */
+  flex-direction: column; /* NEW */
+  height: 100%;           /* NEW: Forces wrapper to fill grid cell */
   margin-bottom: 20px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -15,21 +17,26 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
   transition: box-shadow 0.2s ease;
+  
+  display: flex;          /* NEW */
+  flex-direction: column; /* NEW */
+  height: 100%;           /* NEW: Forces card to stretch */
+  box-sizing: border-box; /* NEW: Keeps padding from breaking width */
 }
 
 .post-card-link:hover .post-card {
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
-/* UPDATED: Aligns the title group and the menu button to the top */
 .post-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-/* NEW: Groups the title and the org badge together on the left */
 .title-group {
   display: flex;
   flex-direction: column;
@@ -53,7 +60,7 @@
   width: 100%;
   border-radius: 8px;
   margin-top: 15px;
-  max-height: 400px;
+  height: 200px;          /* CHANGED: Fixed height for uniform cards */
   object-fit: cover;
 }
 
@@ -61,18 +68,19 @@
   margin-top: 15px;
   line-height: 1.5;
   white-space: pre-wrap;
-  /* Truncate long text on the feed */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  
+  flex-grow: 1;           /* NEW: Acts as a spring to push the engagement bar down */
 }
 
 .engagement-bar {
   display: flex;
   gap: 15px;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 20px;       /* Margin top creates breathing room */
   padding-top: 15px;
   border-top: 1px solid #eee;
 }
@@ -96,7 +104,7 @@
   font-size: 0.95rem;
 }
 
-/* --- NEW: MENU STYLING --- */
+/* --- MENU STYLING --- */
 .menu-container {
   position: relative;
 }
