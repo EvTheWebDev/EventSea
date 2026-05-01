@@ -1,22 +1,22 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import EventCard from "$lib/eventCard/eventCard.svelte"; 
-  
+  // NEW: Import Iconify so we can use the category icons
+  import Icon from "@iconify/svelte";
+
   let { initialData = {}, loading = false, saving = false, orgName = "Your Org" } = $props();
 
   const dispatch = createEventDispatcher();
 
   // --- 1. HELPERS FOR TIME CONVERSION ---
-  // Convert "14:30" -> { h: "2", m: "30", p: "PM" }
   function parseTime(time24) {
-    if (!time24) return { h: "12", m: "00", p: "PM" }; // Default
+    if (!time24) return { h: "12", m: "00", p: "PM" }; 
     let [h, m] = time24.split(':').map(Number);
     const p = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12; // Convert 0 or 12 to 12
+    h = h % 12 || 12; 
     return { h: h.toString(), m: m.toString().padStart(2,'0'), p };
   }
 
-  // Convert "2", "30", "PM" -> "14:30"
   function combineTime(h, m, p) {
     let hour = parseInt(h);
     if (p === "PM" && hour < 12) hour += 12;
@@ -31,7 +31,9 @@
   let description = $state(initialData.DESCRIPTION || "");
   let imagePreview = $state(initialData.IMAGE_URL || null);
 
-  // Parse existing times (or default to 12:00 PM)
+  // NEW: Initialize categories (ensure it's an array)
+  let selectedCategories = $state(Array.isArray(initialData.CATEGORIES) ? initialData.CATEGORIES : []);
+
   const startObj = parseTime(initialData.START_TIME || "12:00");
   let startH = $state(startObj.h);
   let startM = $state(startObj.m);
@@ -42,17 +44,38 @@
   let endM = $state(endObj.m);
   let endP = $state(endObj.p);
 
-  // --- 3. DERIVED VALUES (The "Glue") ---
-  // These update automatically when you change the dropdowns
+  // --- 3. DERIVED VALUES ---
   let startTime = $derived(combineTime(startH, startM, startP));
   let endTime = $derived(combineTime(endH, endM, endP));
 
-  // Options for Dropdowns
   const hours = Array.from({length: 12}, (_, i) => (i + 1).toString());
   const minutes = ["00", "15", "30", "45"];
   const periods = ["AM", "PM"];
 
-  // Preview Logic
+  // NEW: Category definitions matching your screenshot
+  const availableCategories = [
+    { id: "academic", label: "Academic", icon: "solar:square-academic-cap-bold" },
+    { id: "careers", label: "Careers", icon: "tabler:briefcase" },
+    { id: "workshops", label: "Workshops", icon: "grommet-icons:workshop" },
+    { id: "fun", label: "Fun", icon: "lucide:party-popper" },
+    { id: "worship", label: "Worship", icon: "fa7-solid:pray" }
+  ];
+
+  // NEW: Logic to toggle categories and enforce the max of 3
+  function toggleCategory(catId) {
+    if (selectedCategories.includes(catId)) {
+      // Remove it if it's already selected
+      selectedCategories = selectedCategories.filter(id => id !== catId);
+    } else {
+      // Check limit before adding
+      if (selectedCategories.length >= 3) {
+        alert("You can only select up to 3 categories for an event.");
+        return;
+      }
+      selectedCategories = [...selectedCategories, catId];
+    }
+  }
+
   function formatTimeForPreview(time24) {
     const { h, m, p } = parseTime(time24);
     return `${h}:${m} ${p}`;
@@ -66,7 +89,8 @@
     END_TIME: formatTimeForPreview(endTime),
     LOCATION: location || "Location",
     IMAGE_URL: imagePreview || "https://placehold.co/600x400?text=Event+Image",
-    orgName: orgName
+    orgName: orgName,
+    CATEGORIES: selectedCategories // Pass to preview
   });
 
   function handleImageSelect(e) {
@@ -85,10 +109,11 @@
       formData: {
         TITLE: title,
         DATE: date,
-        START_TIME: startTime, // Sends "14:30" to DB
+        START_TIME: startTime, 
         END_TIME: endTime,
         LOCATION: location,
         DESCRIPTION: description,
+        CATEGORIES: selectedCategories // NEW: Added categories to the save payload!
       },
       finalImage: imagePreview 
     });
@@ -163,6 +188,22 @@
       </div>
 
       <div class="form-group">
+        <label>Event Categories (Select up to 3)</label>
+        <div class="category-grid">
+          {#each availableCategories as cat}
+            <button
+              type="button"
+              class="category-select-card {selectedCategories.includes(cat.id) ? 'selected' : ''}"
+              onclick={() => toggleCategory(cat.id)}
+            >
+              <Icon icon={cat.icon} width="36" height="36" />
+              <span class="cat-label">{cat.label}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="desc">Description / Notes</label>
         <textarea id="desc" bind:value={description} rows="4"></textarea>
       </div>
@@ -208,20 +249,18 @@
       background: #fafafa;
   }
   
-  /* FIX 2: Textarea Resizing */
   textarea { 
-      resize: vertical; /* Only allows up/down resizing */
+      resize: vertical; 
       min-height: 100px; 
   } 
   
-  /* Time Input Styling */
   .time-inputs {
       display: flex;
       align-items: center;
       gap: 5px;
   }
   .time-select {
-      margin-bottom: 0; /* Remove default margin for inline feel */
+      margin-bottom: 0; 
       padding: 10px 5px;
       text-align: center;
   }
@@ -234,6 +273,48 @@
       font-weight: bold;
       font-size: 1.2rem;
       margin-bottom: 5px;
+  }
+
+  /* --- NEW: CATEGORY CARD STYLES --- */
+  .category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .category-select-card {
+    flex: 1;
+    min-width: 90px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1B065E;
+    font-family: 'Mont-Semi', sans-serif;
+  }
+  
+  .category-select-card:hover {
+    border-color: #1B065E;
+    background: #f8f8fb;
+    transform: translateY(-2px);
+  }
+  
+  /* The active/selected state (Matches your Teal theme) */
+  .category-select-card.selected {
+    border-color: #2CA58D;
+    background: #eafffa;
+    color: #2CA58D;
+  }
+
+  .cat-label {
+    font-size: 0.9rem;
   }
 
   .button-row { display: flex; gap: 15px; margin-top: 20px; }

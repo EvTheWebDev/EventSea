@@ -13,8 +13,8 @@
 
 .profile-container {
   padding: 24px;
-  max-width: 48%;
-  min-height: 570px;
+  /* max-width: 48%; */
+  /* min-height: 570px; */
   border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -26,11 +26,13 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  
 }
 
 .profile-picture {
-  width: 300px;
-  height: 300px;
+  width: 80%;
+  max-width: 300px;
+  min-width: 150px;
   border-radius: 50%;
   object-fit: cover;
   margin-top: 20px;
@@ -63,6 +65,7 @@
   font-size: 14px;
   font-weight: 500;
   transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
+  margin-bottom: 20px;
 }
 
 .upload-button:hover {
@@ -205,7 +208,10 @@
 }
 
 .profile-org-card {
+  width: 80%;
   display: flex;
+  margin: 0 auto;
+  justify-content: space-between;
   align-items: center;
   gap: 15px;
   padding: 12px 15px;
@@ -272,3 +278,64 @@
 .view-all-link:hover {
   text-decoration: underline;
 }
+
+
+/* --- PROFILE INFO CONTAINER --- */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Adds breathing room between the name and email */
+  justify-content: center;
+}
+
+/* --- THE NAME --- */
+.profileName {
+  font-family: 'Mont-Bold', sans-serif;
+  font-size: 2rem;
+  color: #1B065E;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* Keeps inputs from breaking on small screens */
+}
+
+/* --- THE EMAIL --- */
+.profileEmail {
+  font-family: 'Mont-Medium', sans-serif;
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* --- EDIT MODE INPUT FIELDS --- */
+.profile-info input {
+  font-family: 'Mont-Medium', sans-serif;
+  padding: 8px 14px;
+  margin: 4px 0;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  color: #333;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #fdfdfd;
+}
+
+@media (max-width: 850px) {
+  .profile-info input {
+    font-size: 1rem;
+  }
+  .profileContainer {
+  flex-direction: column;
+  align-items: center;
+  margin-top: -50px;
+}
+.profileSection, .profile-container {
+    width: 100%;
+    padding: 20px;
+    margin: 10px 0;
+  }
+}
+

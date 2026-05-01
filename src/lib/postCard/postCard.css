@@ -23,7 +23,7 @@
   
   display: flex;          /* NEW */
   flex-direction: column; /* NEW */
-  height: 100%;           /* NEW: Forces card to stretch */
+  height: 100%;       
   box-sizing: border-box; /* NEW: Keeps padding from breaking width */
 }
 

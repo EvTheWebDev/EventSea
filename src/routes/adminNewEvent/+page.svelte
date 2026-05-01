@@ -185,6 +185,7 @@
   import { db } from "../../lib/firebase";
   import { collection, addDoc, serverTimestamp } from "firebase/firestore";
   import "./adminNewEvent.css";
+  import { goto } from "$app/navigation";
 
   let { data } = $props();
   // We default to an empty object to prevent "cannot read property of undefined"
@@ -204,8 +205,6 @@
     saving = true;
 
     try {
-      // FIX 1: Robust Name Check
-      // We check orgName (new) -> name (old) -> default
       const safeOrgName = orgData.orgName || orgData.name || "My Organization";
       const safeImg = finalImage || "/placeholder.jpg";
       const newEvent = {
@@ -219,8 +218,9 @@
         createdAt: serverTimestamp(),
       };
 
-      await addDoc(collection(db, "events"), newEvent);
+      const docRef = await addDoc(collection(db, "events"), newEvent);
       alert("Event Created!");
+      goto(`/events/${docRef.id}`);
     } catch (err) {
       console.error(err);
       alert("Error: " + err.message);

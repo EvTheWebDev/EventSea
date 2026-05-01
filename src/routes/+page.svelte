@@ -150,7 +150,7 @@
     // 3. FETCH POSTS 
     try {
       const postsRef = collection(db, "posts");
-      const postQ = query(postsRef, orderBy("createdAt", "desc"), limit(6));
+      const postQ = query(postsRef, orderBy("createdAt", "desc"), limit(4));
       const postSnap = await getDocs(postQ);
       globalPosts = postSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (err) {
@@ -232,7 +232,7 @@
   </div>
 
   <div class="trendingPosts">
-    <h2 class="heading">Latest Announcements</h2>
+    <h2 class="heading">Latest Posts</h2>
     <div class="postCards">
       {#if loadingPosts}
         <p>Loading posts...</p>
@@ -253,27 +253,27 @@
       <a href="/category/academic" class="categoryCard">
         <Icon icon="solar:square-academic-cap-bold" width="45" height="45" style="color: #1b065e" />
         <h3>Academic</h3>
-        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.academic} events</span>
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.academic} {categoryCounts.academic === 1 ? 'event' : 'events'}</span>
       </a>
       <a href="/category/careers" class="categoryCard">
         <Icon icon="tabler:briefcase" width="45" height="45" style="color: #1b065e" />
         <h3>Careers</h3>
-        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.careers} events</span>
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.careers} {categoryCounts.careers === 1 ? 'event' : 'events'}</span>
       </a>
       <a href="/category/workshops" class="categoryCard">
         <Icon icon="grommet-icons:workshop" width="45" height="45" style="color: #1b065e" />
         <h3>Workshops</h3>
-        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.workshops} events</span>
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.workshops} {categoryCounts.workshops === 1 ? 'event' : 'events'}</span>
       </a>
       <a href="/category/fun" class="categoryCard">
         <Icon icon="lucide:party-popper" width="45" height="45" style="color: #1b065e" />
         <h3>Fun</h3>
-        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.fun} events</span>
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.fun} {categoryCounts.fun === 1 ? 'event' : 'events'}</span>
       </a>
       <a href="/category/worship" class="categoryCard">
         <Icon icon="fa7-solid:pray" width="45" height="45" style="color: #1b065e" />
         <h3>Worship</h3>
-        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.worship} events</span>
+        <span><Icon icon="mdi:event-outline" class="margin" width="18" height="18" />{categoryCounts.worship} {categoryCounts.worship === 1 ? 'event' : 'events'}</span>
       </a>
     </div>
   </div>

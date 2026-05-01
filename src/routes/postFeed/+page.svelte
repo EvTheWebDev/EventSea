@@ -1,9 +1,11 @@
 <script>
   import './postFeed.css';
-    import '../../global.css';
+  import '../../global.css';
   import PostCard from "$lib/postCard/postCard.svelte";
-  import { authStore } from "../../store/auth.js"; // Adjust path to your auth store
-  import { db, getUserProfile } from "$lib/firebase";
+  import { authStore } from "../../store/auth.js"; 
+  
+  // CHANGED: We swap getUserProfile for fetchOrgs
+  import { db, fetchOrgs } from "$lib/firebase";
   import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 
   // 1. STATE VARIABLES
@@ -14,8 +16,9 @@
   // Controls whether we show "latest" or "following"
   let currentFilter = $state('latest'); 
   
-  /** @type {any} */
-  let userProfile = $state(null);
+  // NEW: Store an array of just the IDs of the orgs the user follows
+  /** @type {string[]} */
+  let followedOrgIds = $state([]);
 
   // 2. FETCH DATA ON MOUNT
   $effect(() => {
@@ -33,13 +36,15 @@
         console.error("Error loading feed:", err);
       }
 
-      // If a user is logged in, grab their profile so we know who they follow
+      // NEW: Grab followed orgs using the existing fetchOrgs function!
       const uid = $authStore?.user?.uid;
       if (uid) {
         try {
-          userProfile = await getUserProfile(/** @type {string} */ (uid));
+          const orgs = await fetchOrgs({ mode: 'myOrgs', userId: uid });
+          // Extract just the IDs so we can easily compare them with post.orgId
+          followedOrgIds = orgs.map(org => org.id);
         } catch (err) {
-          console.error("Error loading profile:", err);
+          console.error("Error loading followed orgs:", err);
         }
       }
       
@@ -50,14 +55,13 @@
   });
 
   // 3. REACTIVE FILTERING
-  // This automatically recalculates the list whenever 'allPosts', 'currentFilter', or 'userProfile' changes!
+  // Svelte 5 will perfectly recalculate this whenever currentFilter or followedOrgIds changes
   let displayedPosts = $derived(
-    currentFilter === 'following' && userProfile?.followedOrgs
-      ? allPosts.filter(post => userProfile.followedOrgs.includes(post.orgId))
+    currentFilter === 'following'
+      ? allPosts.filter(post => followedOrgIds.includes(post.orgId))
       : allPosts
   );
 </script>
-
 <div class="wholePage">
     <div class="nav"></div>
     <main class="feed-container">

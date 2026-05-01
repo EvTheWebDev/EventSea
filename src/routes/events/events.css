@@ -161,10 +161,21 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    
 }
 
 .eventsPage .eventCard {
     margin-bottom: 50px;
+}
+
+.events-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    .card {
+        margin: 10px;
+    }
 }
 
 .eventsPage {

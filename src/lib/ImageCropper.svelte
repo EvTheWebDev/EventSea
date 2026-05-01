@@ -9,10 +9,10 @@
   let pixels = $state(null);
   let processing = $state(false);
 
-  // THE FIX: Tell Svelte that this incoming event is perfectly safe
-  /** @param {any} e */
+  // FIXED: Svelte 5 hands us the data directly, no 'detail' wrapper needed!
+  /** @param {{ pixels: any, percent: any }} e */
   function handleCropComplete(e) {
-    pixels = e.detail.pixels;
+    pixels = e.pixels; 
   }
 
   async function handleSave() {
@@ -31,7 +31,9 @@
   }
 </script>
 
-<div class="cropper-overlay">
+<div class="cropper-wrapper">
+  <div class="cropper-backdrop"></div>
+  
   <div class="cropper-modal">
     <h3>Crop Profile Picture</h3>
     
@@ -41,7 +43,7 @@
         bind:crop
         bind:zoom
         aspect={1}
-        on:cropcomplete={handleCropComplete}
+        oncropcomplete={handleCropComplete} 
       />
     </div>
 
@@ -59,41 +61,89 @@
 </div>
 
 <style>
-  .cropper-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  /* The main container locks to the screen and centers everything */
+  .cropper-wrapper {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    z-index: 99999; 
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* The dark film sits completely separate in the background */
+  .cropper-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 9999; padding: 20px;
   }
+
+  /* The white box now sits crisply above the background */
   .cropper-modal {
-    background: white; width: 100%; max-width: 450px;
-    border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+    position: relative; 
+    background: #f8f8f8; 
+    width: 100%; 
+    max-width: 450px;
+    border-radius: 12px; 
+    display: flex; 
+    flex-direction: column;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    overflow: hidden; 
+    opacity: 100%;
   }
+
   .cropper-modal h3 {
-    text-align: center; padding: 15px; margin: 0;
-    background: #f8f8f8; border-bottom: 1px solid #eee;
+    text-align: center; 
+    padding: 15px; 
+    margin: 0;
+    background: #f8f8f8; 
+    border-bottom: 1px solid #eee;
+    position: relative;
+    z-index: 2; 
   }
   
-  /* THE FIX: Absolute boundaries so the cropper knows exactly how big to be */
   .crop-container {
     position: relative; 
     width: 100%;
     height: 350px; 
     background: #222;
     overflow: hidden;
+    z-index: 1;
   }
   
   .cropper-controls {
-    padding: 15px; background: #f8f8f8; display: flex; justify-content: center;
+    padding: 15px; 
+    background: #f8f8f8; 
+    display: flex; 
+    justify-content: center;
+    position: relative;
+    z-index: 2;
   }
+
   .zoom-slider { width: 80%; }
+  
   .cropper-actions {
-    display: flex; gap: 10px; padding: 15px; background: white;
+    display: flex; 
+    gap: 10px; 
+    padding: 15px; 
+    background: white;
+    position: relative;
+    z-index: 2;
   }
+
   .cancel-btn, .save-btn {
     flex: 1; padding: 12px; border: none; border-radius: 8px;
     font-weight: bold; cursor: pointer;
   }
+  
   .cancel-btn { background: #e0e0e0; color: #333; }
   .save-btn { background: #2ca58d; color: white; }
 </style>

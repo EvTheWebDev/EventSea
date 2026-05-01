@@ -211,10 +211,10 @@
 </script>
 
 <main>
-  <div class="nav"></div>
+<div class="nav"></div>
   <h1 id="profHead" class="heading">Hey there, {firstName}!</h1>
   <div class="profileContainer">
-    <div class="profile-container">
+    <div class="profile-container profileSection">
       <div class="profile-picture-section">
         {#if profilePictureUrl}
           <img src={profilePictureUrl} alt="Profile" class="profile-picture" />
@@ -245,16 +245,18 @@
           {#if editMode}
             <input type="text" class="name-input" bind:value={editedFirst} placeholder="First name" />
             <input type="text" class="name-input" bind:value={editedLast} placeholder="Last name" />
+          
           {:else}
             {firstName} {#if lastName}{lastName}{/if}
           {/if}
         </p>
+        
 
         <p class="profileEmail">
-          <Icon icon="mdi:email-outline" width="15" height="15" style="color: #0f0446" />
           {#if editMode}
             <input type="email" bind:value={editedEmail} />
           {:else}
+            <Icon icon="mdi:email-outline" width="15" height="15" style="color: #0f0446" />
             {email}
           {/if}
         </p>
@@ -275,7 +277,7 @@
       </div>
     </div>
     
-    <div class="profileOrgs">
+    <div class="profileOrgs profileSection">
       <h2>Organization Affiliations</h2>
 
       {#if loadingOrgs}
