@@ -44,6 +44,10 @@
   let endM = $state(endObj.m);
   let endP = $state(endObj.p);
 
+
+  let previewMode = $state('user');
+  let notifyFollowers = $state(false);
+
   // --- 3. DERIVED VALUES ---
   let startTime = $derived(combineTime(startH, startM, startP));
   let endTime = $derived(combineTime(endH, endM, endP));
@@ -113,7 +117,8 @@
         END_TIME: endTime,
         LOCATION: location,
         DESCRIPTION: description,
-        CATEGORIES: selectedCategories // NEW: Added categories to the save payload!
+        CATEGORIES: selectedCategories,
+        NOTIFY_FOLLOWERS: notifyFollowers
       },
       finalImage: imagePreview 
     });
@@ -208,6 +213,13 @@
         <textarea id="desc" bind:value={description} rows="4"></textarea>
       </div>
 
+      <div class="form-group checkbox-group">
+  <label class="checkbox-label">
+    <input type="checkbox" bind:checked={notifyFollowers} />
+    <span>Notify followers about this event?</span>
+  </label>
+</div>
+
       <div class="button-row">
         {#if initialData.id}
              <button type="button" class="cancel-btn" onclick={() => history.back()} disabled={saving}>Cancel</button>
@@ -226,10 +238,31 @@
 
   <div class="preview-section">
     <div class="preview-sticky">
-        <h2>Live Preview</h2>
-        <div class="card-wrapper">
-            <EventCard event={previewEvent} isAdmin={false} />
+        
+        <div class="preview-header">
+          <h2>Live Preview</h2>
+          <div class="preview-toggle">
+            <button 
+              type="button" 
+              class={previewMode === 'user' ? 'active' : ''} 
+              onclick={() => previewMode = 'user'}
+            >
+              User View
+            </button>
+            <button 
+              type="button" 
+              class={previewMode === 'admin' ? 'active' : ''} 
+              onclick={() => previewMode = 'admin'}
+            >
+              Admin View
+            </button>
+          </div>
         </div>
+
+        <div class="card-wrapper">
+            <EventCard event={previewEvent} isAdmin={previewMode === 'admin'} />
+        </div>
+        
     </div>
   </div>
 </div>
@@ -316,6 +349,47 @@
   .cat-label {
     font-size: 0.9rem;
   }
+
+.preview-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .preview-toggle {
+    display: flex;
+    background: #e0e0e0;
+    padding: 4px;
+    border-radius: 8px;
+    gap: 4px;
+  }
+
+  .preview-toggle button {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Mont-Semi', sans-serif;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .preview-toggle button.active {
+    background: white;
+    color: #1B065E;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* CHANGED: Removed pointer-events: none so the card feels alive! */
+  .card-wrapper { 
+    transform: scale(1.1); 
+    margin-top: 20px;
+  }
+
 
   .button-row { display: flex; gap: 15px; margin-top: 20px; }
   .submit-btn { flex: 2; background-color: #2CA58D; color: white; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }

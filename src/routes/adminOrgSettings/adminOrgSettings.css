@@ -1,24 +1,32 @@
+/* --- HEADER --- */
 #profHead {
   text-align: center;
   margin-top: 80px;
-  margin-bottom: 75px;
+  margin-bottom: 50px;
+  color: #1B065E;
 }
 
+/* --- MAIN LAYOUT --- */
 .profileContainer {
   margin: 0 auto;
   width: 90%;
+  max-width: 1200px;
   display: flex;
   justify-content: space-around;
+  gap: 30px;
+  align-items: flex-start;
 }
 
+/* --- LEFT COLUMN: ORG PROFILE --- */
 .profile-container {
-  padding: 24px;
+  padding: 30px 24px;
   max-width: 450px;
   min-height: 570px;
   border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
+  flex: 1;
 }
 
 .profile-picture-section {
@@ -29,18 +37,18 @@
 }
 
 .profile-picture {
-  width: 360px;
-  height: 360px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   object-fit: cover;
-  margin-top: 20px;
+  margin-top: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .profile-picture-placeholder {
   width: 180px;
   height: 180px;
-  border-radius: 12px;
+  border-radius: 50%;
   background: #e8e8f0;
   display: flex;
   align-items: center;
@@ -48,6 +56,7 @@
   color: #999;
   font-size: 16px;
   font-weight: 500;
+  margin-top: 10px;
 }
 
 .upload-label {
@@ -76,172 +85,235 @@
   cursor: not-allowed;
 }
 
-.error-text {
-  color: #a40000;
-  font-size: 13px;
-  text-align: center;
-}
-
+/* --- ORG INFO & EDITING --- */
 .profile-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-top: 8px;
-  color:#1B065E
+  justify-content: center;
+  align-items: center; 
+  padding-top: 25px;
+  color: #1B065E;
 }
 
-.profile-info p {
-  font-size: 18px;
+.profileName {
+  font-family: 'Mont-Bold', sans-serif;
+  font-size: 2.2rem;
+  color: #1B065E;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-@media (max-width: 600px) {
-  .profile-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-picture {
-    width: 140px;
-    height: 140px;
-  }
-
-  .profile-picture-placeholder {
-    width: 140px;
-    height: 140px;
-  }
+.profileEmail {
+  font-family: 'Mont-Medium', sans-serif;
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  justify-content: center;
 }
 
-.profile {
-    background-color: red;
+/* Edit Mode Input Fields */
+.profile-info input, .add-admin-form input {
+  font-family: 'Mont-Medium', sans-serif;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  color: #333;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #fdfdfd;
 }
 
-.sign-out-section {
+.name-input {
+  font-size: 1.2rem !important;
+  font-family: 'Mont-Bold', sans-serif !important;
+  color: #1B065E !important;
+  text-align: left;
+  max-width: 90%;
+}
+
+.profile-info input:focus, .add-admin-form input:focus {
+  outline: none;
+  border-color: #1B065E;
+  box-shadow: 0 0 0 3px rgba(27, 6, 94, 0.1); 
+}
+
+/* Edit/Save Actions */
+.profile-actions {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
-  padding: 16px 0;
-}
-
-.sign-out-button {
-  padding: 10px 24px;
-  background-color: #a40000;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
-}
-
-.sign-out-button:hover {
-  background-color: #bf1f1f;
-  transform: scale(1.03);
-  filter: brightness(1.08);
-}
-
-.sign-out-button:active {
-  transform: scale(0.98);
-}
-
-.profile-info .profileName {
-  font-size: 38px;
-  font-family: "Mont-Bold";
-}
-
-.profile-actions {
-  text-align: right;
+  gap: 15px;
+  margin-top: 15px;
 }
 
 .profile-actions button {
   border: none;
   background: none;
   cursor: pointer;
-    color: #1B065E;
-  font-size: 24px;
-  font-family: "Mont-Semi";
-  margin-left: 10px;
+  color: #1B065E;
+  font-size: 18px;
+  font-family: "Mont-Semi", sans-serif;
+  transition: opacity 0.2s;
 }
 
+.profile-actions button:hover {
+  opacity: 0.7;
+}
+
+.edit-button {
+  font-size: 24px !important;
+}
+
+/* Notifications */
+.error-text {
+  color: #a40000;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+  font-family: 'Mont-Medium', sans-serif;
+}
+
+.success-text {
+  color: #2CA58D;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* --- RIGHT COLUMN: MANAGE ADMINS --- */
 .manageAdmins {
-  padding: 24px;
+  padding: 30px 24px;
   min-width: 45%;
- border-radius: 25px;
+  border-radius: 25px;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-size: 22px;
   color: #1B065E;
   text-align: center;
+  flex: 1;
 }
 
 .manageAdmins h2 {
-  font-family: "Mont-Bold";
+  font-family: "Mont-Bold", sans-serif;
+  font-size: 1.8rem;
   color: #1B065E;
-  padding-top: 25px;
-  margin-bottom: 20px;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
-.manageAdmins p {
-  margin-bottom: 50px;
+.manageAdmins p.subtitle {
+  margin-bottom: 30px;
+  color: #666;
+  font-size: 1rem;
+  font-family: 'Mont-Medium', sans-serif;
 }
 
-.manageAdmins a {
-  color: #1B065E;
-  text-decoration: none;
-  font-family: "Mont-Semi";
-  border: #1B065E 4px solid;
-  padding: 15px 30px;
-  border-radius: 15px;
-}
 .add-admin-form {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  margin-bottom: 30px;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
 }
+
+.save-btn {
+  padding: 10px 20px;
+  background-color: #2CA58D; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
+  white-space: nowrap;
+}
+
+.save-btn:hover {
+  background-color: #39b9a0;
+  transform: scale(1.03);
+  filter: brightness(1.08);
+}
+
+.save-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Admin List */
 .admin-list {
-  padding: 10px;
-  margin-top: 20px;
+  text-align: left;
+  background: #f8f8fb;
+  padding: 20px;
+  border-radius: 12px;
 }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
-    font-size: 0.9rem;
-  }
+.admin-list h3 {
+  font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-family: 'Mont-Semi', sans-serif;
+}
 
-  input, textarea {
+.admin-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-card {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 1.05rem;
+  color: #333;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 950px) {
+  .profileContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  .profile-container, .manageAdmins {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    background: #fafafa;
-    transition: border 0.2s;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-picture {
+    width: 220px; 
+    height: 220px;
   }
 
-  .save-btn {
-    padding: 10px;
-    background-color: #2CA58D; /* Your Teal Accent */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 160ms ease, filter 160ms ease, background-color 160ms ease;
+  .profile-picture-placeholder {
+    width: 140px;
+    height: 140px;
   }
 
-  .save-btn:hover {
-    background-color: #39b9a0;
-    transform: scale(1.03);
-    filter: brightness(1.08);
+  .add-admin-form {
+    flex-direction: column;
+    width: 100%;
   }
 
-  .save-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  .add-admin-form input, .save-btn {
+    width: 100% !important;
   }
+}

@@ -7,6 +7,7 @@
   import { authStore } from "../../store/auth.js";
   import { messageStore, showMessage } from "../../store/message.js";
   import { signUp, logIn, getProfilePicture } from "../firebase.js";
+  import  NotificationBell  from "../notificationBell/NotificationBell.svelte";
 
   let authMode = "login";
   let email = "";
@@ -113,47 +114,63 @@
 <nav>
   <a href="/" class="logoLink"><div class="logo">EventSea</div></a>
   
-  <button class="hamburger" on:click={toggleMobileMenu} aria-label="Toggle menu">
-    <Icon icon={isMobileMenuOpen ? "material-symbols:close" : "material-symbols:menu"} width="36" height="36" />
-  </button>
-
-  <div class="links" class:open={isMobileMenuOpen}>
-    <li class="menuItem"><a href="/" on:click={closeMobileMenu}>Home</a></li>
-    
-    <li class="menuItem" class:open-submenu={activeDropdown === 'events'}>
-      <a href="/events" on:click={(e) => handleDropdownClick(e, 'events')}>
-        Events
-        <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
-      </a>
-      <ul id="menuEvents">
-        <li class="subItem"><a href="/userEvents" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Events</a></li>
-        <li class="subItem"><a href="/events" on:click={closeMobileMenu}>All Events</a></li>
-      </ul>
-    </li>
-
-    <li class="menuItem" class:open-submenu={activeDropdown === 'orgs'}>
-      <a href="/organizations" on:click={(e) => handleDropdownClick(e, 'orgs')}>
-        Organizations
-        <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
-      </a>
-      <ul id="menuOrg">
-        <li><a href="/userOrganizations" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Organizations</a></li>
-        <li><a href="/organizations" on:click={closeMobileMenu}>All Organizations</a></li>
-      </ul>
-    </li>
-
-    <li class="menuItem">
-      {#if $authStore.user}
-        <a href="/profile" class="profile-link" on:click={closeMobileMenu}>
-          My Profile
-          {#if navAvatar}
-            <img src={navAvatar} alt="avatar" class="nav-avatar" />
-          {/if}
+  <div class="mobileButtons">
+    {#if $authStore.user}
+      <div class="mobileBell">
+        <NotificationBell/>
+      </div>
+    {/if}
+ 
+    <button class="hamburger" on:click={toggleMobileMenu} aria-label="Toggle menu">
+      <Icon icon={isMobileMenuOpen ? "material-symbols:close" : "material-symbols:menu"} width="36" height="36" />
+    </button>
+  </div>
+ 
+  <div class="nav-right">
+    <div class="links" class:open={isMobileMenuOpen}>
+      <li class="menuItem"><a href="/" on:click={closeMobileMenu}>Home</a></li>
+      
+      <li class="menuItem" class:open-submenu={activeDropdown === 'events'}>
+        <a href="/events" on:click={(e) => handleDropdownClick(e, 'events')}>
+          Events
+          <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
         </a>
-      {:else}
-        <button type="button" class="auth-toggle" on:click={() => openAuth("login")}>Log In/Sign Up</button>
-      {/if}
-    </li>
+        <ul id="menuEvents">
+          <li class="subItem"><a href="/userEvents" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Events</a></li>
+          <li class="subItem"><a href="/events" on:click={closeMobileMenu}>All Events</a></li>
+        </ul>
+      </li>
+
+      <li class="menuItem" class:open-submenu={activeDropdown === 'orgs'}>
+        <a href="/organizations" on:click={(e) => handleDropdownClick(e, 'orgs')}>
+          Organizations
+          <Icon icon="icon-park-outline:down" width="18" height="18" style="color: #fff;margin-left:2px" class="dropdown-icon" />
+        </a>
+        <ul id="menuOrg">
+          <li><a href="/userOrganizations" on:click={(e) => { protectClick(e); closeMobileMenu(); }}>My Organizations</a></li>
+          <li><a href="/organizations" on:click={closeMobileMenu}>All Organizations</a></li>
+        </ul>
+      </li>
+
+      <li class="menuItem">
+        {#if $authStore.user}
+          <a href="/profile" class="profile-link" on:click={closeMobileMenu}>
+            My Profile
+            {#if navAvatar}
+              <img src={navAvatar} alt="avatar" class="nav-avatar" />
+            {/if}
+          </a>
+        {:else}
+          <button type="button" class="auth-toggle" on:click={() => openAuth("login")}>Log In/Sign Up</button>
+        {/if}
+      </li>
+    </div>
+
+    {#if $authStore.user}
+      <div class="desktopBell">
+        <NotificationBell />
+      </div>
+    {/if}
   </div>
 </nav>
 

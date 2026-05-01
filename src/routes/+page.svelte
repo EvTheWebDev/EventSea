@@ -14,6 +14,7 @@
   import SearchNotFoundModal from "$lib/searchNotFoundModal.svelte";
   import { Org } from "$lib";
   import PostCard from "$lib/postCard/postCard.svelte";
+  import NotificationTester from "$lib/notificationTester.svelte";
 
   // 1. UPGRADED TO SVELTE 5 STATE (Reactivity for UI and Likes)
   /** @type {Array<Record<string, any>>} */
@@ -214,6 +215,7 @@
       </form>
     </div>
   </div>
+<!-- <NotificationTester /> -->
 
   <div class="trendingEvents">
     <h2 class="heading">Trending Events</h2>

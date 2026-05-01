@@ -22,6 +22,7 @@
   );
 
   let processing = $state(false);
+  let showDeleteModal = $state(false);
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -61,7 +62,6 @@
     goto(`/events/${event.id}`);
   }
 
-  // --- NEW FUNCTION: Route to Org Page ---
   function handleViewOrg() {
     const orgId = event.ORG_ID || event.orgId;
     if (orgId) {
@@ -71,13 +71,19 @@
     }
   }
 
-  async function handleDelete() {
-    if (!confirm(`Delete "${event.TITLE}"?`)) return;
+  function promptDelete() {
+    showDeleteModal = true;
+  }
+
+  async function confirmDelete() {
+    processing = true;
     try {
       await deleteDoc(doc(db, "events", event.id));
+      showDeleteModal = false;
       window.location.reload();
     } catch (err) {
       alert(err.message);
+      processing = false;
     }
   }
 </script>
@@ -136,9 +142,7 @@
     <div class="actions">
       {#if isAdmin}
         <button class="btn-primary" onclick={handleEdit}>Edit</button>
-        <button class="btn-outline delete-btn" onclick={handleDelete}
-          >Delete</button
-        >
+        <button class="btn-outline delete-btn" onclick={promptDelete}>Delete</button>
       {:else}
         <button
           class={isRsvped ? "btn-primary" : "btn-outline"}
@@ -154,20 +158,44 @@
           {/if}
         </button>
 
-        <button class="btn-outline" onclick={handleLearnMore}>Learn more</button
-        >
+        <button class="btn-outline" onclick={handleLearnMore}>Learn more</button>
       {/if}
     </div>
   </div>
 </div>
 
+{#if showDeleteModal}
+  <div class="delete-modal-overlay">
+    <div class="delete-modal-content">
+      <h3>Delete Event?</h3>
+      <p>Are you sure you want to delete <strong>"{event.TITLE}"</strong>? This action cannot be undone.</p>
+      
+      <div class="delete-modal-actions">
+        <button 
+          class="btn-outline" 
+          onclick={() => showDeleteModal = false} 
+          disabled={processing}
+        >
+          Cancel
+        </button>
+        <button 
+          class="btn-danger" 
+          onclick={confirmDelete} 
+          disabled={processing}
+        >
+          {processing ? "Deleting..." : "Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+
 <style>
-  /* Add this to ensure users know they can click the name */
   .clickable {
     cursor: pointer;
   }
   .clickable:hover {
-    text-decoration: underline; /* Optional hover effect */
+    text-decoration: underline; 
   }
 
   .btn-primary {
@@ -180,5 +208,68 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
+  }
+
+  /* --- DELETE MODAL STYLES --- */
+  .delete-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .delete-modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .delete-modal-content h3 {
+    margin-top: 0;
+    color: #1b065e;
+    font-size: 1.5rem;
+  }
+
+  .delete-modal-content p {
+    color: #555;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .delete-modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-danger {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #a40000;
+    background: #a40000;
+    color: white;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: #cc0000;
+    border-color: #cc0000;
+  }
+
+  .btn-danger:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 </style>

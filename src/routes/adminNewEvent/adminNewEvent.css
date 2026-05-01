@@ -16,6 +16,7 @@
   .header h1 {
     color: #1B065E;
     margin-bottom: 10px;
+    text-align: left;
   }
   .header p {
     color: #666;

@@ -331,6 +331,8 @@ export async function createOrganization(uid, orgName, orgEmail) {
     orgName: orgName,
     email: orgEmail,
     adminUid: uid,
+    adminUids: [uid], 
+    memberUids: [uid],
     createdAt: serverTimestamp(),
     image: null,
   };

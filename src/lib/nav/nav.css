@@ -297,6 +297,68 @@ nav button {
   font-size: 50px;
   cursor: pointer;
 }
+.mobileBell {
+    display: none;
+}
+.desktopBell {
+    display: block;
+    margin-left: 0;
+    margin-right: 25px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    gap: 16px;
+}
+
+.mobileButtons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    gap: 16px;
+}
+
+/* Ensure the mobile button container pushes to the far right */
+.mobileButtons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    flex: 1; /* This pushes the logo to the left and buttons to the right */
+}
+
+/* Fix mobile bell color and order */
+.mobileBell {
+    display: none; /* Hidden on desktop */
+    order: -1;     /* Ensures it stays to the left of the hamburger */
+}
+
+.mobileBell :global(svg), 
+.mobileBell :global(.iconify) {
+    color: white !important;
+}
+
+@media (max-width: 850px) {
+    .mobileBell {
+        display: block;
+    }
+    
+    /* Ensure the hamburger doesn't have extra margins */
+    .hamburger {
+        display: block;
+        margin-left: 0;
+    }
+}
+
+/* Desktop Desktop Bell spacing */
+.desktopBell {
+    display: block;
+    margin-left: 10px;
+}
 
 .success-modal .success-content { padding: 6px 10px; }
 
@@ -304,6 +366,12 @@ nav button {
 @media (max-width: 850px) {
   .hamburger {
       display: block;
+  }
+  .mobileBell {
+    display: block;
+  }
+  .desktopBell {
+    display: none;
   }
 
   nav {
@@ -366,6 +434,8 @@ nav button {
       color: white;
   }
 }
+
+
 
 @media (max-width: 420px) {
   .warning-modal, .success-modal { width: calc(100% - 28px); border-radius: 8px; }

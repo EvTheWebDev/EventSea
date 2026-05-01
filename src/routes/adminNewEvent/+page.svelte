@@ -229,9 +229,11 @@
     }
   }
 </script>
-
-<EventForm
+<div class="page">
+  <EventForm
   orgName={orgData.orgName || orgData.name || "My Organization"}
   {saving}
   on:save={handleSave}
 />
+</div>
+
