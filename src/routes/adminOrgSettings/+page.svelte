@@ -129,6 +129,7 @@ async function loadOrgData() {
         successMsg = "Organization profile updated!";
         window.location.reload();
       }
+      window.location.reload();
       editMode = false;
     } catch (err) {
         errorMsg = "Failed to save changes.";

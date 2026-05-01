@@ -4,6 +4,7 @@
   import { authStore } from "../../store/auth.js";
   import { promptLogin } from "../../store/authModal.js";
   import { showMessage } from "../../store/message.js";
+  import { invalidateAll } from "$app/navigation";
   import {
     uploadProfilePicture,
     getProfilePicture,
@@ -194,7 +195,8 @@
       
       editMode = false;
       showMessage("Profile saved!", "success");
-      
+      await invalidateAll();
+      window.location.reload();
       // Update local values without a full reload for better UX
       userDocFirst = editedFirst;
       userDocLast = editedLast;

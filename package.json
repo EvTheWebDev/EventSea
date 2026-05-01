@@ -46,6 +46,7 @@
 		"firebase": "^12.6.0",
 		"firebase-admin": "^13.6.1",
 		"iconify-icon": "^3.0.2",
+		"resend": "^6.12.2",
 		"svelte-easy-crop": "^5.0.1"
 	}
 }

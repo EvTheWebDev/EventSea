@@ -24,7 +24,7 @@
     await loadRoster();
   });
 
-  async function loadRoster() {
+async function loadRoster() {
     try {
       loading = true;
       const orgRef = doc(db, "orgs", orgId);
@@ -34,35 +34,40 @@
         const data = orgSnap.data();
         orgName = data.orgName || "Organization";
 
-        // Grab arrays of UIDs (defaulting to empty arrays if they don't exist yet)
-        const adminUids = data.adminUids || [];
-        const memberUids = data.memberUids || [];
+        // 1. Pull the specific arrays from your Firestore document
+        const adminUids = data.adminUid || []; // Changed to match your "adminUid" field
+        const followerUids = data.followers || [];
 
-        // Combine into one unique list so we don't fetch the same user twice
-        const uniqueUids = [...new Set([...adminUids, ...memberUids])];
+        // 2. Combine into a unique set so we don't fetch the same person twice
+        const uniqueUids = [...new Set([...adminUids, ...followerUids])];
 
-        // Fetch all user documents
+        // 3. Fetch user details and tag their status
         const fetchedUsers = await Promise.all(
           uniqueUids.map(async (uid) => {
             const userRef = doc(db, "users", uid);
             const userSnap = await getDoc(userRef);
 
-            if (userSnap.exists()) {
-              const uData = userSnap.data();
-              return {
-                uid: uid,
-                name: uData.name || uData.displayName || "Unknown User",
-                email: uData.email || "No Email",
-                profilePic: uData.profilePicture || "/blankUser.png",
-                // Flag them as an officer if their UID is in the admin array
-                isOfficer: adminUids.includes(uid)
-              };
-            }
-            return null; // Ignore deleted/missing users
+          if (userSnap.exists()) {
+  const uData = userSnap.data();
+  
+  // Combine firstName and lastName into a single string
+  // We use optional chaining and fallback strings to prevent "undefined undefined"
+  const fullName = `${uData.firstName || ""} ${uData.lastName || ""}`.trim();
+
+  return {
+    uid: uid,
+    // If fullName is empty (both fields missing), fallback to "Unknown User"
+    name: fullName || "Unknown User",
+    // Ensure this matches the exact field name in your Firestore (e.g., 'email')
+    email: uData.email || "No Email",
+    profilePic: uData.profilePicture || "/blankUser.png",
+    isOfficer: adminUids.includes(uid)
+  };
+}
+            return null;
           })
         );
 
-        // Filter out any nulls from missing users
         allMembers = fetchedUsers.filter(user => user !== null);
 
       } else {

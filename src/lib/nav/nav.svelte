@@ -2,7 +2,7 @@
   import "./nav.css";
   import { fade } from "svelte/transition";
   import { showAuthModal, authRedirect, promptLogin } from "../../store/authModal.js";
-  import { goto } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import { authStore } from "../../store/auth.js";
   import { messageStore, showMessage } from "../../store/message.js";
@@ -61,6 +61,9 @@
         await signUp(email, password, firstName, lastName);
         showMessage("You have successfully signed up!");
       }
+
+      // await invalidateAll();
+      window.location.reload();
 
       $showAuthModal = false;
       email = ""; firstName = ""; lastName = ""; password = "";
